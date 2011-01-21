@@ -1,3 +1,4 @@
+import Defaults
 from NumWrap import zeros,dot,matrixmultiply
 
 class MG2:
@@ -50,7 +51,7 @@ class MG2:
     """
     def __init__(self,atoms,nrad=32,fineness=1,**kwargs):
         self.version = 2
-        self.do_grad_dens = kwargs.get('do_grad_dens',False)
+        self.do_grad_dens = kwargs.get('do_grad_dens',Defaults.DFTDensityGradient)
         self.atoms = atoms
         self.nrad = nrad
         self.fineness = fineness
@@ -105,7 +106,7 @@ class MG2:
         self.patch_grids(atomgrids)
         return
 
-    def patch_atoms(self,atomgrids,**opts):
+    def patch_atoms(self,atomgrids,**kwargs):
         """This is Becke's patching algorithm. Attempting to implement
         the normalization that is in eq 22 of that reference."""
         from PyQuante.MolecularGrid import becke_atomic_grid_p
@@ -119,7 +120,7 @@ class MG2:
                 Pnum = 1
                 Pdenom = 0
                 for jat in xrange(nat):
-                    bap = becke_atomic_grid_p(jat,(xp,yp,zp),self.atoms,**opts)
+                    bap = becke_atomic_grid_p(jat,(xp,yp,zp),self.atoms,**kwargs)
                     Pdenom += bap
                     if iat == jat: P_iat = bap
                 Ptot = P_iat/Pdenom

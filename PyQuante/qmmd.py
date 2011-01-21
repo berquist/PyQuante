@@ -20,6 +20,7 @@ REPORT BUGS
 COPYRIGHT
 
 """
+import Defaults
 from leapfrog import leapfrog
 from hartree_fock import rhf,uhf,uhf_fixed_occ
 from Wavefunction import Wavefunction
@@ -27,7 +28,7 @@ from force import hf_force
 
 from Element import symbol
 
-def rhf_dyn(atoms,**opts):
+def rhf_dyn(atoms,**kwargs):
     """\
     Uses RHF derived forces to compute dynamics.  
     
@@ -43,7 +44,7 @@ def rhf_dyn(atoms,**opts):
     
     
     Hartree-Fock options copied from hartree_fock.py -> rhf
-    rhf(atoms,**opts) - Closed-shell HF driving routine
+    rhf(atoms,**kwargs) - Closed-shell HF driving routine
     
     atoms       A Molecule object containing the molecule
 
@@ -62,20 +63,20 @@ def rhf_dyn(atoms,**opts):
     orbs          None    If not none, the guess orbitals
     """
     #dynamics options
-    job = opts.get('job','pydyn')
-    nsteps = opts.get('nsteps',100)
-    dt = opts.get('dt',0.1)
+    job = kwargs.get('job',Defaults.DynJob)
+    nsteps = kwargs.get('nsteps',Defaults.DynSteps)
+    dt = kwargs.get('dt',Defaults.DynTStep)
     
     #save any given RHF options
-    cc = opts.get('ConvCriteria',1e-4)
-    maxit = opts.get('MaxIter',20)
-    doavg = opts.get('DoAveraging',False)
-    temp = opts.get('ETemp',False)
-    bfcns = opts.get('bfs',None)
+    cc = kwargs.get('ConvCriteria',Defaults.ConvergenceCriteria)
+    maxit = kwargs.get('MaxIter',Defaults.MaxIters)
+    doavg = kwargs.get('DoAveraging',Defaults.Averaging)
+    temp = kwargs.get('ETemp',Defaults.ElectronTemperature)
+    bfcns = kwargs.get('bfs')
     if not bfcns:
-        bdat = opts.get('basis_data',None)
-    ints = opts.get('integrals', None)
-    init_orbs = opts.get('orbs',None)
+        bdat = kwargs.get('basis_data')
+    ints = kwargs.get('integrals')
+    init_orbs = kwargs.get('orbs')
     
     #open data file to store energy info 
     edat = open(job+'.edat', 'w')
@@ -109,7 +110,7 @@ def rhf_dyn(atoms,**opts):
 
     return 
 
-def uhf_dyn(atoms,**opts):
+def uhf_dyn(atoms,**kwargs):
     """\
     Uses UHF derived forces to compute dynamics.  
     
@@ -125,7 +126,7 @@ def uhf_dyn(atoms,**opts):
     
     
     Hartree-Fock options copied from hartree_fock.py -> uhf
-    uhf(atoms,**opts) - Unrestriced Open Shell Hartree Fock
+    uhf(atoms,**kwargs) - Unrestriced Open Shell Hartree Fock
     atoms       A Molecule object containing the molecule
 
     Options:      Value   Description
@@ -140,20 +141,20 @@ def uhf_dyn(atoms,**opts):
     orbs          None    If not None, the guess orbitals
     """
     #dynamics options
-    job = opts.get('job','pydyn')
-    nsteps = opts.get('nsteps',100)
-    dt = opts.get('dt',0.1)
+    job = kwargs.get('job',Defaults.DynJob)
+    nsteps = kwargs.get('nsteps',Defaults.DynSteps)
+    dt = kwargs.get('dt',Defaults.DynTStep)
     
     #save any given UHF options
-    cc = opts.get('ConvCriteria',1e-4)
-    maxit = opts.get('MaxIter',20)
-    doavg = opts.get('DoAveraging',False)
-    temp = opts.get('ETemp',False)
-    bfcns = opts.get('bfs',None)
+    cc = kwargs.get('ConvCriteria',Defaults.ConvergenceCriteria)
+    maxit = kwargs.get('MaxIter',Defaults.MaxIter)
+    doavg = kwargs.get('DoAveraging',Defaults.Averaging)
+    temp = kwargs.get('ETemp',Defaults.ElectronTemperature)
+    bfcns = kwargs.get('bfs')
     if not bfcns:
-        bdat = opts.get('basis_data',None)
-    ints = opts.get('integrals', None)
-    init_orbs = opts.get('orbs',None)
+        bdat = kwargs.get('basis_data')
+    ints = kwargs.get('integrals')
+    init_orbs = kwargs.get('orbs')
     
     #open data file to store energy info 
     edat = open(job+'.edat', 'w')
@@ -192,7 +193,7 @@ def uhf_dyn(atoms,**opts):
     return 
 
 
-def fixedocc_uhf_dyn(atoms,occa,occb,**opts):
+def fixedocc_uhf_dyn(atoms,occa,occb,**kwargs):
     """\
     Uses Fixed occupation UHF derived forces to compute dynamics.  
 
@@ -211,7 +212,7 @@ def fixedocc_uhf_dyn(atoms,occa,occb,**opts):
     
     
     Hartree-Fock options copied from hartree_fock.py -> uhf
-    uhf(atoms,**opts) - Unrestriced Open Shell Hartree Fock
+    uhf(atoms,**kwargs) - Unrestriced Open Shell Hartree Fock
     atoms       A Molecule object containing the molecule
 
     Options:      Value   Description
@@ -226,20 +227,20 @@ def fixedocc_uhf_dyn(atoms,occa,occb,**opts):
     orbs          None    If not None, the guess orbitals
     """
     #dynamics options
-    job = opts.get('job','pydyn')
-    nsteps = opts.get('nsteps',100)
-    dt = opts.get('dt',0.1)
+    job = kwargs.get('job',Defaults.DynJob)
+    nsteps = kwargs.get('nsteps',Defaults.DynSteps)
+    dt = kwargs.get('dt',Defaults.DynTSteps)
     
     #save any given UHF options
-    cc = opts.get('ConvCriteria',1e-4)
-    maxit = opts.get('MaxIter',20)
-    doavg = opts.get('DoAveraging',False)
-    temp = opts.get('ETemp',False)
-    bfcns = opts.get('bfs',None)
+    cc = kwargs.get('ConvCriteria',Defaults.ConvergenceCriteria)
+    maxit = kwargs.get('MaxIter',Defaults.MaxIter)
+    doavg = kwargs.get('DoAveraging',Defaults.Averaging)
+    temp = kwargs.get('ETemp',Defaults.ElectronTemperature)
+    bfcns = kwargs.get('bfs')
     if not bfcns:
-        bdat = opts.get('basis_data',None)
-    ints = opts.get('integrals', None)
-    init_orbs = opts.get('orbs',None)
+        bdat = kwargs.get('basis_data')
+    ints = kwargs.get('integrals')
+    init_orbs = kwargs.get('orbs')
     
     #open data file to store energy info 
     edat = open(job+'.edat', 'w')

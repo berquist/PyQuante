@@ -10,11 +10,11 @@
  distribution.
 
 """
-
+import Defaults
 from math import sqrt,pi,exp,log,atan
 from NumWrap import zeros,arcsinh,where
 
-def XC(dens,gamma,**opts):
+def XC(dens,gamma,**kwargs):
     """\
     New top level routine for all XC functionals.
     dens is a two x npts component matrix with spin-up and spin-down 
@@ -30,8 +30,8 @@ def XC(dens,gamma,**opts):
     dfxdgab = 0 always, it's included for consistency with dfcdgab.
     AEM June 2006.
     """
-    functional = opts.get('functional','SVWN')
-    derivative = opts.get('derivative','analyt')
+    functional = kwargs.get('functional',Defaults.DFTFunctional)
+    derivative = kwargs.get('derivative',Defaults.DerivativeType)
     assert functional in xfuncs.keys() and functional in cfuncs.keys()
     #that npts is the same for all 5 vectors should be checked elsewhere    
     npts = len(dens[0]) 
@@ -316,10 +316,10 @@ def AM05(dens,gamma):
 # since the exchange functionals factor (e.g. fx(rhoa,rhob) = fx(rhoa)+fx(rhob))
 # we define them in the separate form, understanding that we can always
 # use the above relationship to refactor them
-def xs(rho,**opts):
+def xs(rho,**kwargs):
     "Xalpha X functional. Can pass in 'alpha' as a kwarg"
-    tol = opts.get('tol',1e-10)
-    Xalpha = opts.get('Xalpha',2./3.)
+    tol = kwargs.get('tol',Defaults.DFTDensityCutoff)
+    Xalpha = kwargs.get('Xalpha',Defaults.DFTXalphaFactor)
     fac=-2.25*Xalpha*pow(3./4./pi,1./3.)
     if rho < tol: rho=0
     rho3 = pow(rho,1./3.)
@@ -327,10 +327,10 @@ def xs(rho,**opts):
     vx = (4./3.)*fac*rho3
     return ex,vx
 
-def xb(rho,gam,**opts):
+def xb(rho,gam,**kwargs):
     # Corrected by AEM June 2006.
-    tol = opts.get('tol',1e-10)
-    return_flag = opts.get('return_flag',0)
+    tol = kwargs.get('tol',Defaults.DFTDensityCutoff)
+    return_flag = kwargs.get('return_flag')
     fx=dfxdrho=dfxdgam=0
     if rho > tol:
         rho13 = pow(rho,1./3.)
@@ -343,9 +343,9 @@ def xb(rho,gam,**opts):
     if return_flag == 1: return fx,dfxdrho,dfxdgam
     return fx,dfxdrho
 
-def xpbe(rho,gam,**opts):
-    tol = opts.get('tol',1e-10)
-    return_flag = opts.get('return_flag',0)
+def xpbe(rho,gam,**kwargs):
+    tol = kwargs.get('tol',Defaults.DFTDensityCutoff)
+    return_flag = kwargs.get('return_flag')
     kap = 0.804
     mu = 0.449276922095889E-2
     ex=vxrho=vxgam=0
@@ -363,8 +363,8 @@ def xpbe(rho,gam,**opts):
     if return_flag == 1: return ex,vxrho,vxgam
     return ex,vxrho
 
-def cvwn(rhoa,rhob,**opts):
-    tol = opts.get('tol',1e-10)
+def cvwn(rhoa,rhob,**kwargs):
+    tol = kwargs.get('tol',Defaults.DFTDensityCutoff)
     rho = rhoa+rhob
     ec = vcrhoa = vcrhob = 0
     if rho < tol: return ec,vcrhoa,vcrhob
@@ -386,10 +386,10 @@ def cvwn(rhoa,rhob,**opts):
     vcrhob = eps - (x/6.)*deps_dx - deps_dg*(1+zeta)
     return ec,vcrhoa,vcrhob
 
-def clyp(rhoa,rhob,gamaa,gamab,gambb,**opts):
+def clyp(rhoa,rhob,gamaa,gamab,gambb,**kwargs):
     # Modified and corrected by AEM in June 2006.
-    tol = opts.get('tol',1e-10)
-    return_flag = opts.get('return_flag',0)
+    tol = kwargs.get('tol',Defaults.DFTDensityCutoff)
+    return_flag = kwargs.get('return_flag')
     a = 0.04918  # Parameters from the LYP papers
     b = 0.132
     c = 0.2533
@@ -450,10 +450,10 @@ def clyp(rhoa,rhob,gamaa,gamab,gambb,**opts):
     if return_flag == 1: return fc,fcrhoa,fcrhob,fcgamaa,fcgamab,fcgambb
     return fc,fcrhoa,fcrhob
 
-def cpbe(rhoa,rhob,gama,gamb,gamab,**opts):
+def cpbe(rhoa,rhob,gama,gamb,gamab,**kwargs):
     # My attempt to rewrite the functional. Not finished yet.
-    tol = opts.get('tol',1e-10)
-    return_flag = opts.get('return_flag',0)
+    tol = kwargs.get('tol',Defaults.DFTDensityCutoff)
+    return_flag = kwargs.get('return_flag')
     rho = rhoa+rhob
     ec = vca = vcb = vcgama = vcgamb = vcgamab = 0
     gam = 0.031091
@@ -520,11 +520,11 @@ def cpbe(rhoa,rhob,gama,gamb,gamab,**opts):
     # Havent done the dE_dgamma derives yet
     return ec,vca,vcb
 
-def c1(rho,gam,**opts):
+def c1(rho,gam,**kwargs):
     # AEM's EXX compatible correlation 1.
     # AEM June 2006.
-    tol = opts.get('tol',1e-10)
-    return_flag = opts.get('return_flag',0)
+    tol = kwargs.get('tol',Defaults.DFTDensityCutoff)
+    return_flag = kwargs.get('return_flag')
     fc = dfcdrho = dfcdgamma = 0
     g1 = 0.3060
     g2 = 0.04108
@@ -543,9 +543,9 @@ def c1(rho,gam,**opts):
 	dfcdgamma = eps*(1.-g1-g2*rs)*rho/snorm2*dXds2
     return fc,dfcdrho,dfcdgamma
 
-def pw(rhoa,rhob,**opts):
+def pw(rhoa,rhob,**kwargs):
     # AEM June 2006.
-    tol = opts.get('tol',1e-10)
+    tol = kwargs.get('tol',Defaults.DFTDensityCutoff)
     rho = rhoa+rhob
     ec = vca = vcb = 0
     if rho < tol: return ec,vca,vcb
@@ -638,10 +638,10 @@ def pbe_dF(s,mu=0.2195149727645171,kap=0.8040):
     P0 = 1.+mu*s*s/kap
     return 2*mu*s/(P0*P0)
 
-def am05xc(rho,gam,**opts):
+def am05xc(rho,gam,**kwargs):
     # AM05, both exchange and correlation in one routine
     # AEM June 2006.
-    tol = opts.get('tol',1e-16) # to conform with official am05 routine
+    tol = kwargs.get('tol',Defaults.AM05DensityCutoff) # to conform with official am05 routine
     fxc = dfxcdrho = dfxcdgamma = 0
     g = 0.8098
     a = 2.804

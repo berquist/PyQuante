@@ -13,6 +13,7 @@
 # Todo
 # - update SimilarityTransformation to simx
 
+import Defaults
 import logging
 from math import sqrt
 from NumWrap import matrixmultiply,identity,zeros,eigh,cholesky,inv
@@ -44,7 +45,7 @@ def outprod(A):
     "D = outprod(A) : Return the outer product A*A'"
     return matrixmultiply(A,A.T)
 
-def geigh(H,A,**opts):
+def geigh(H,A,**kwargs):
     """\
     Generalized eigenproblem using a symmetric matrix H.
 
@@ -57,8 +58,8 @@ def geigh(H,A,**opts):
                'Cut'   Use a symmetric orthogonalization with a cutoff
                 
     """
-    have_xfrm = opts.get('have_xfrm',False)
-    orthog = opts.get('orthog','Chol') 
+    have_xfrm = kwargs.get('have_xfrm')
+    orthog = kwargs.get('orthog',Defaults.OrthogMethod)
     if not have_xfrm:
         if orthog == 'Can':
             X = CanOrth(A)
@@ -68,8 +69,8 @@ def geigh(H,A,**opts):
             X = SymOrthCutoff(A)
         else:
             X = SymOrth(A)
-        opts['have_xfrm'] = True
-        return geigh(H,X,**opts)
+        kwargs['have_xfrm'] = True
+        return geigh(H,X,**kwargs)
     val,vec = eigh(simx(H,A))
     vec = matrixmultiply(A,vec)
     return val,vec

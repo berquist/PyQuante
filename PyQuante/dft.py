@@ -9,7 +9,7 @@
  license. Please see the file LICENSE that is part of this
  distribution. 
 """
-
+import Defaults
 #from math import *
 from Ints import getbasis,getJ,getints
 #from MolecularGrid import MolecularGrid
@@ -29,9 +29,10 @@ from LA2 import SymOrth
 def getXC(gr,nel,**kwargs):
     "Form the exchange-correlation matrix"
 
-    functional = kwargs.get('functional','SVWN')
+    functional = kwargs.get('functional',Defaults.DFTFunctional)
     do_grad_dens = need_gradients[functional]
-    do_spin_polarized = kwargs.get('do_spin_polarized')
+    do_spin_polarized = kwargs.get('do_spin_polarized',
+                                   Defaults.DFTSpinPolarized)
     
     gr.floor_density()  # Insure that the values of the density don't underflow
     gr.renormalize(nel) # Renormalize to the proper # electrons
@@ -144,38 +145,30 @@ def dft(atoms,**kwargs):
                   U       Unrestricted open shell (aka spin-polarized dft)
                           Only A works now. Stay tuned.
     """
-    verbose = kwargs.get('verbose',False) 
-    ConvCriteria = kwargs.get('ConvCriteria',1e-4)
-    MaxIter = kwargs.get('MaxIter',20)
-    DoAveraging = kwargs.get('DoAveraging',True)
-    ETemp = kwargs.get('ETemp',False)
-    functional = kwargs.get('functional','SVWN')
+    verbose = kwargs.get('verbose') 
+    ConvCriteria = kwargs.get('ConvCriteria',Defaults.DFTConvergenceCriteria)
+    MaxIter = kwargs.get('MaxIter',Defaults.MaxIter)
+    DoAveraging = kwargs.get('DoAveraging',Defaults.DFTAveraging)
+    ETemp = kwargs.get('ETemp',Defaults.DFTElectronTemperature)
+    functional = kwargs.get('functional',Defaults.DFTFunctional)
     kwargs['do_grad_dens'] = need_gradients[functional]
 
-    bfs = kwargs.get('bfs',None)
-    if not bfs:
-        basis_data = kwargs.get('basis_data',None)
-        bfs = getbasis(atoms,basis_data)
-
-    integrals = kwargs.get('integrals',None)
-    if integrals:
-        S,h,Ints = integrals
-    else:
-        S,h,Ints = getints(bfs,atoms)
+    bfs = getbasis(atoms,**kwargs)
+    S,h,Ints = getints(bfs,atoms,**kwargs)
 
     nel = atoms.get_nel()
     enuke = atoms.get_enuke()
 
     # default medium mesh
-    grid_nrad = kwargs.get('grid_nrad',32)
-    grid_fineness = kwargs.get('grid_fineness',1)
+    grid_nrad = kwargs.get('grid_nrad',Defaults.DFTGridRadii)
+    grid_fineness = kwargs.get('grid_fineness',Defaults.DFTGridFineness)
 
     gr = MolecularGrid(atoms,grid_nrad,grid_fineness,**kwargs) 
     gr.set_bf_amps(bfs)
 
     # It would be nice to have a more intelligent treatment of the guess
     # so that I could pass in a density rather than a set of orbs.
-    orbs = kwargs.get('orbs',None)
+    orbs = kwargs.get('orbs')
     if orbs is None: orbe,orbs = geigh(h,S)
 
     nclosed,nopen = atoms.get_closedopen()
@@ -254,39 +247,30 @@ def udft(atoms,**kwargs):
     grid_nrad     32      Number of radial shells per atom
     grid_fineness 1       Radial shell fineness. 0->coarse, 1->medium, 2->fine
     """
-    verbose = kwargs.get('verbose',False) 
-    ConvCriteria = kwargs.get('ConvCriteria',1e-4)
-    MaxIter = kwargs.get('MaxIter',20)
-    DoAveraging = kwargs.get('DoAveraging',True)
-    ETemp = kwargs.get('ETemp',False)
-    functional = kwargs.get('functional','SVWN')
+    verbose = kwargs.get('verbose')
+    ConvCriteria = kwargs.get('ConvCriteria',Defaults.DFTConvergenceCriteria)
+    MaxIter = kwargs.get('MaxIter',Defaults.MaxIter)
+    DoAveraging = kwargs.get('DoAveraging',Defaults.DFTAveraging)
+    ETemp = kwargs.get('ETemp',Defaults.DFT.ElectronTemperature)
+    functional = kwargs.get('functional',Defaults.DFTFunctional)
     kwargs['do_grad_dens'] = need_gradients[functional]
     kwargs['do_spin_polarized'] = True
 
-    bfs = kwargs.get('bfs',None)
-    if not bfs:
-        basis_data = kwargs.get('basis_data',None)
-        bfs = getbasis(atoms,basis_data)
-
-    integrals = kwargs.get('integrals',None)
-    if integrals:
-        S,h,Ints = integrals
-    else:
-        S,h,Ints = getints(bfs,atoms)
-
+    bfs = getbasis(atoms,**kwargs)
+    S,h,Ints = getints(bfs,atoms,**kwargs)
     nel = atoms.get_nel()
     enuke = atoms.get_enuke()
 
     # default medium mesh
-    grid_nrad = kwargs.get('grid_nrad',32)
-    grid_fineness = kwargs.get('grid_fineness',1)
+    grid_nrad = kwargs.get('grid_nrad',Defaults.DFTGridRadii)
+    grid_fineness = kwargs.get('grid_fineness',Defaults.DFTGridFineness)
 
     gr = MolecularGrid(atoms,grid_nrad,grid_fineness,**kwargs) 
     gr.set_bf_amps(bfs)
 
     # It would be nice to have a more intelligent treatment of the guess
     # so that I could pass in a density rather than a set of orbs.
-    orbs = kwargs.get('orbs',None)
+    orbs = kwargs.get('orbs')
     if not orbs: orbe,orbs = geigh(h,S)
     orbsa = orbsb = orbs
 
@@ -377,38 +361,30 @@ def dft_fixed_occ(atoms,occs,**kwargs):
                   U       Unrestricted open shell (aka spin-polarized dft)
                           Only A works now. Stay tuned.
     """
-    verbose = kwargs.get('verbose',False) 
-    ConvCriteria = kwargs.get('ConvCriteria',1e-4)
-    MaxIter = kwargs.get('MaxIter',20)
-    DoAveraging = kwargs.get('DoAveraging',True)
-    ETemp = kwargs.get('ETemp',False)
-    functional = kwargs.get('functional','SVWN')
+    verbose = kwargs.get('verbose') 
+    ConvCriteria = kwargs.get('ConvCriteria',Defaults.DFTConvergenceCriteria)
+    MaxIter = kwargs.get('MaxIter',Defaults.MaxIter)
+    DoAveraging = kwargs.get('DoAveraging',Defaults.DFTAveraging)
+    ETemp = kwargs.get('ETemp',Defaults.DFTElectronTemperature)
+    functional = kwargs.get('functional',Defaults.DFTFunctional)
     kwargs['do_grad_dens'] = need_gradients[functional]
 
-    bfs = kwargs.get('bfs',None)
-    if not bfs:
-        basis_data = kwargs.get('basis_data',None)
-        bfs = getbasis(atoms,basis_data)
-
-    integrals = kwargs.get('integrals',None)
-    if integrals:
-        S,h,Ints = integrals
-    else:
-        S,h,Ints = getints(bfs,atoms)
+    bfs = getbasis(atoms,**kwargs)
+    S,h,Ints = getints(bfs,atoms,**kwargs)
 
     nel = atoms.get_nel()
     enuke = atoms.get_enuke()
 
     # default medium mesh
-    grid_nrad = kwargs.get('grid_nrad',32)
-    grid_fineness = kwargs.get('grid_fineness',1)
+    grid_nrad = kwargs.get('grid_nrad',Defaults.DFTGridRadii)
+    grid_fineness = kwargs.get('grid_fineness',Defaults.DFTGridFineness)
 
     gr = MolecularGrid(atoms,grid_nrad,grid_fineness,**kwargs) 
     gr.set_bf_amps(bfs)
 
     # It would be nice to have a more intelligent treatment of the guess
     # so that I could pass in a density rather than a set of orbs.
-    orbs = kwargs.get('orbs',None)
+    orbs = kwargs.get('orbs')
     if orbs is None: orbe,orbs = geigh(h,S)
 
     nclosed,nopen = atoms.get_closedopen()
@@ -502,42 +478,34 @@ def udft_fixed_occ(atoms,occa, occb, **kwargs):
     grid_nrad     32      Number of radial shells per atom
     grid_fineness 1       Radial shell fineness. 0->coarse, 1->medium, 2->fine
     """
-    verbose = kwargs.get('verbose',False) 
-    ConvCriteria = kwargs.get('ConvCriteria',1e-4)
-    MaxIter = kwargs.get('MaxIter',20)
-    DoAveraging = kwargs.get('DoAveraging',True)
-    averaging = kwargs.get('averaging',0.5)
-    ETemp = kwargs.get('ETemp',False)
-    functional = kwargs.get('functional','LDA') 
+    verbose = kwargs.get('verbose')
+    ConvCriteria = kwargs.get('ConvCriteria',Defaults.DFTConvergenceCriteria)
+    MaxIter = kwargs.get('MaxIter',Defaults.MaxIter)
+    DoAveraging = kwargs.get('DoAveraging',Defaults.DFTAveraging)
+    averaging = kwargs.get('averaging',Defaults.MixingFraction)
+    ETemp = kwargs.get('ETemp',Defaults.DFTElectronTemperature)
+    functional = kwargs.get('functional',Defaults.DFTFunctional)
     #default to LDA which has no correlation since that is easier
 
     kwargs['do_grad_dens'] = need_gradients[functional]
     kwargs['do_spin_polarized'] = True
 
-    bfs = kwargs.get('bfs',None)
-    if not bfs:
-        basis_data = kwargs.get('basis_data',None)
-        bfs = getbasis(atoms,basis_data)
-
-    integrals = kwargs.get('integrals',None)
-    if integrals:
-        S,h,Ints = integrals
-    else:
-        S,h,Ints = getints(bfs,atoms)
+    bfs = getbasis(atoms,**kwargs)
+    S,h,Ints = getints(bfs,atoms,**kwargs)
 
     nel = atoms.get_nel()
     enuke = atoms.get_enuke()
 
     # default medium mesh
-    grid_nrad = kwargs.get('grid_nrad',32)
-    grid_fineness = kwargs.get('grid_fineness',1)
+    grid_nrad = kwargs.get('grid_nrad',Defaults.DFTGridRadii)
+    grid_fineness = kwargs.get('grid_fineness',Defaults.DFTGridFineness)
 
     gr = MolecularGrid(atoms,grid_nrad,grid_fineness,**kwargs) 
     gr.set_bf_amps(bfs)
 
     # It would be nice to have a more intelligent treatment of the guess
     # so that I could pass in a density rather than a set of orbs.
-    orbs = kwargs.get('orbs',None)
+    orbs = kwargs.get('orbs')
     if not orbs: orbe,orbs = geigh(h,S)
     orbsa = orbsb = orbs
 

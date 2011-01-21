@@ -2,6 +2,7 @@
 Solvers.py - explores ways to use different eigensolvers in Python
 """
 
+import Defaults
 from PyQuante import Molecule
 from PyQuante.NumWrap import eigh,zeros,matrixmultiply,transpose,dot,\
      identity,diagonal,array
@@ -33,8 +34,8 @@ def orthog(q,qs,**kwargs):
     return norm
 
 def davidson(A,nroots,**kwargs):
-    etol = kwargs.get('etol',1e-6) # tolerance on the eigenval convergence
-    ntol = kwargs.get('ntol',1e-10) # tolerance on the vector norms for addn
+    etol = kwargs.get('etol',Defaults.DavidsonEvecTolerance) # tolerance on the eigenval convergence
+    ntol = kwargs.get('ntol',Defaults.DavidsonNormTolerance) # tolerance on the vector norms for addn
     n,m = A.shape
     ninit = max(nroots,2)
     B = zeros((n,ninit),'d')
@@ -81,8 +82,8 @@ def jacobi(A,**kwargs):
     tol         1e-10    The tolerance for an element to be declared zero
     max_sweeps  100      Maximum number of sweeps through the matrix
     """
-    max_sweeps = kwargs.get('max_sweeps',100)
-    tol = kwargs.get('tol',1e-10)
+    max_sweeps = kwargs.get('max_sweeps',Defaults.JacobiSweeps)
+    tol = kwargs.get('tol',Defaults.JacobiTolerance)
     n = len(A)
     V = identity(n,'d')
     b = diagonal(A)

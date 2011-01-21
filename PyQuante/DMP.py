@@ -19,9 +19,10 @@
 #     normally kicks in around 70 or 80 iterations.
 #  MCW works, provided we have a guess for efermi
 
+import Defaults
+
 import logging
 from math import sqrt
-from PyQuante.Ints import getbasis,getints,get2JmK
 from PyQuante.Molecule import Molecule
 from PyQuante.LA2 import mkdens,SymOrth,simx
 from PyQuante.hartree_fock import get_energy
@@ -32,9 +33,9 @@ logger = logging.getLogger("pyquante")
 class AbstractDMP:
     "AbstractDMP - Functions common to all density matrix purifiers"
     method = "Abstract"
-    def __init__(self,F,Ne,S=None,**opts):
-        self.tol = opts.get('tol',1e-7)
-        self.maxit = opts.get('maxit',100)
+    def __init__(self,F,Ne,S=None,**kwargs):
+        self.tol = kwargs.get('tol',Defaults.DMPTolerance)
+        self.maxit = kwargs.get('maxit',Defaults.DMPIterations)
         self.do_orth = S is not None
 
         self.N = F.shape[0]
@@ -90,9 +91,9 @@ class AbstractDMP:
 class NOTCP:
     "Nonorthogonal version of Niklasson Trace Correcting Purification"
     method = "NOTCP"
-    def __init__(self,F,Ne,S,**opts):
-        self.tol = opts.get('tol',1e-7)
-        self.maxit = opts.get('maxit',50)
+    def __init__(self,F,Ne,S,**kwargs):
+        self.tol = kwargs.get('tol',Defaults.DMPTolerance)
+        self.maxit = kwargs.get('maxit',Defaults.DMPIterations)
         self.S = S
         self.N = F.shape[0]
         self.I = identity(self.N,'d')
@@ -266,7 +267,7 @@ class McWeeny(AbstractDMP):
     def converged(self): return abs(trace(self.D) - self.Ne) < self.tol
 
 
-def init_dmat_solver(Method,**opts):
+def init_dmat_solver(Method,**kwargs):
     "Wrapper around Dmat classes to make them work like simple solvers"
     def solver(F,S,Ne):
         solve = Method(F,Ne,S)
@@ -296,7 +297,7 @@ def tridiagmat(alpha,beta):
 def lanczos_minmax(F,S=None,**kwargs):
     "Estimate the min/max evals of F using a few iters of Lanczos"
     doS = S is not None
-    niter = kwargs.get('niter',8)
+    niter = kwargs.get('niter',Defaults.DMPLanczosMinmaxIters)
     N = F.shape[0]
     niter = min(N,niter)
     x = zeros(N,'d')

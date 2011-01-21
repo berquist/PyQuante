@@ -8,12 +8,12 @@ from PyQuante.CGBF import CGBF
 class BasisSet(object):
     """
     """
-    def __init__(self, atoms, basis_data = None, **opts):
+    def __init__(self, atoms, basis_data = None, **kwargs):
         """
         
         """
         # Option to omit f basis functions from imported basis sets
-        omit_f = opts.get('omit_f',False)
+        omit_f = kwargs.get('omit_f',False)
         if not basis_data:
             from PyQuante.Basis.p631ss import basis_data
         elif type(basis_data) == type(''):

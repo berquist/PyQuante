@@ -15,7 +15,7 @@
  license. Please see the file LICENSE that is part of this
  distribution. 
 """
-
+import Defaults
 from GridPoint import GridPoint
 from Lebedev import Lebedev
 from Legendre import Legendre
@@ -55,14 +55,14 @@ class AtomicGrid:
     of angular momenta, where the number of radial shells is
     determined by the length of the list.
     """
-    def __init__(self, atom, **opts):
+    def __init__(self, atom, **kwargs):
         # Currently I'm keeping the grid in an array of points,
         # and in an array of shells of points. The goal is to move
         # to only having the array of shells 
-        self.do_grad_dens = opts.get('do_grad_dens',False)
-        radial = opts.get('radial','EulerMaclaurin')
-        nrad = opts.get('nrad',32)
-        fineness = opts.get('fineness',1)
+        self.do_grad_dens = kwargs.get('do_grad_dens',Defaults.DFTDensityGradient)
+        radial = kwargs.get('radial',Defaults.DFTRadialGridType)
+        nrad = kwargs.get('nrad',Defaults.DFTGridRadii)
+        fineness = kwargs.get('fineness',Defaults.DFTGridFineness)
         self.points = []
         self.shells = []
         self.Z = atom.atno
@@ -83,7 +83,7 @@ class AtomicGrid:
             for (xang,yang,zang,wang) in Lebedev[nangpts]:
                 weight = wrad*wang
                 point = GridPoint(rrad*xang+x,rrad*yang+y,
-                                  rrad*zang+z,weight,**opts)
+                                  rrad*zang+z,weight,**kwargs)
                 self.points.append(point)
                 shell.append(point)
         return
@@ -96,12 +96,12 @@ class AtomicGrid:
             point.floor_density(tol)
         return
 
-    def set_bf_amps(self,bfs,**opts):
+    def set_bf_amps(self,bfs,**kwargs):
         "Set the basis function amplitude at each grid point"
-        for point in self.points: point.set_bf_amps(bfs,**opts)
+        for point in self.points: point.set_bf_amps(bfs,**kwargs)
         return
 
-    def setdens(self,D,**opts):
+    def setdens(self,D,**kwargs):
         "Set the density at each grid point"
         for point in self.points: point.setdens(D)
         return
@@ -163,9 +163,9 @@ class AtomicGrid:
 # The ri's are properly adjusted to go to the proper distances.
 # The wi's are adjusted to only have to be multiplied by wrad from
 # the lebedev shell
-def EulerMaclaurinGrid(nrad,Z,**opts):
-    do_sg1 = opts.get('do_sg1',True)
-    nang = opts.get('nang',194)
+def EulerMaclaurinGrid(nrad,Z,**kwargs):
+    do_sg1 = kwargs.get('do_sg1',Defaults.DFTGridSG1)
+    nang = kwargs.get('nang',Defaults.DFTGridAngularPoints)
     radial = EulerMaclaurinRadialGrid(nrad,Z)
     if do_sg1:
         grid = [(r,w,SG1Angs(r,Z)) for r,w in radial]

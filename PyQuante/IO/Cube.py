@@ -15,9 +15,9 @@
 #
 # Still in the process of being debugged.
 
-def get_bbox(atoms,**opts):
-    dbuff = opts.get('dbuff',5)
-    big = opts.get('big',10000)
+def get_bbox(atoms,**kwargs):
+    dbuff = kwargs.get('dbuff',5)
+    big = kwargs.get('big',10000)
     xmin = ymin = zmin = big
     xmax = ymax = zmax = -big
     for atom in atoms:

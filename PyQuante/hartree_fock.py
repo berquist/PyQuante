@@ -11,7 +11,7 @@
 """
 
 import string,sys,time
-
+import Defaults
 from fermi_dirac import get_efermi, get_fermi_occs,mkdens_occs,get_entropy
 from LA2 import geigh,mkdens,trace2
 from Ints import get2JmK,getbasis,getints,getJ,getK
@@ -30,7 +30,7 @@ def get_fock(D,Ints,h):
     "Return the HF Fock matrix"
     return h + get2JmK(Ints,D)
 
-def get_energy(h,F,D,enuke=0.,**opts):
+def get_energy(h,F,D,enuke=0.,**kwargs):
     "Form the total energy of the closed-shell wave function."
     eone = trace2(D,h)
     etwo = trace2(D,F)
@@ -52,7 +52,7 @@ def get_enuke(atoms):
     print "Use the Molecular instance function"
     return atoms.get_enuke()
 
-def hf(atoms,**opts):
+def hf(atoms,**kwargs):
     """\
     Experimental inteface to rhf/uhf routines. See those
     routines for more information.
@@ -60,12 +60,12 @@ def hf(atoms,**opts):
     # Ultimately this will check spin_type to determine whether
     # to call uhf or rohf for open shell
     nclosed,nopen = atoms.get_closedopen()
-    if nopen: return uhf(atoms,**opts)
-    return rhf(atoms,**opts)
+    if nopen: return uhf(atoms,**kwargs)
+    return rhf(atoms,**kwargs)
 
-def rhf(atoms,**opts):
+def rhf(atoms,**kwargs):
     """\
-    rhf(atoms,**opts) - Closed-shell HF driving routine
+    rhf(atoms,**kwargs) - Closed-shell HF driving routine
     
     atoms       A Molecule object containing the molecule
 
@@ -83,17 +83,14 @@ def rhf(atoms,**opts):
                           If not None, S,h,Ints
     orbs          None    If not none, the guess orbitals
     """
-    ConvCriteria = opts.get('ConvCriteria',1e-4)
-    MaxIter = opts.get('MaxIter',20)
-    DoAveraging = opts.get('DoAveraging',False)
-    ETemp = opts.get('ETemp',False)
+    ConvCriteria = kwargs.get('ConvCriteria',Defaults.ConvergenceCriteria)
+    MaxIter = kwargs.get('MaxIter',Defaults.MaxIter)
+    DoAveraging = kwargs.get('DoAveraging',Defaults.Averaging)
+    ETemp = kwargs.get('ETemp',Defaults.ElectronTemperature)
     
     logger.info("RHF calculation on %s" % atoms.name)
 
-    bfs = opts.get('bfs',None)
-    if not bfs:
-        basis_data = opts.get('basis_data',None)
-        bfs = getbasis(atoms,basis_data)
+    bfs = getbasis(atoms,**kwargs)
 
     nclosed,nopen = atoms.get_closedopen()
     nocc = nclosed
@@ -102,15 +99,10 @@ def rhf(atoms,**opts):
     logger.info("Nbf = %d" % len(bfs))
     logger.info("Nclosed = %d" % nclosed)
 
-    integrals = opts.get('integrals', None)
-    if integrals:
-        S,h,Ints = integrals
-    else:
-        S,h,Ints = getints(bfs,atoms)
-
+    S,h,Ints = getints(bfs,atoms,**kwargs)
     nel = atoms.get_nel()
 
-    orbs = opts.get('orbs',None)
+    orbs = kwargs.get('orbs')
     if orbs is None: orbe,orbs = geigh(h,S)
 
     enuke = atoms.get_enuke()
@@ -148,9 +140,9 @@ def rhf(atoms,**opts):
     logger.info("Final HF energy for system %s is %f" % (atoms.name,energy))
     return energy,orbe,orbs
 
-def uhf(atoms,**opts):
+def uhf(atoms,**kwargs):
     """\
-    uhf(atoms,**opts) - Unrestriced Open Shell Hartree Fock
+    uhf(atoms,**kwargs) - Unrestriced Open Shell Hartree Fock
     atoms       A Molecule object containing the molecule
 
     Options:      Value   Description
@@ -164,30 +156,22 @@ def uhf(atoms,**opts):
                           If not None, S,h,Ints
     orbs          None    If not None, the guess orbitals
     """
-    ConvCriteria = opts.get('ConvCriteria',1e-5)
-    MaxIter = opts.get('MaxIter',40)
-    DoAveraging = opts.get('DoAveraging',True)
-    averaging = opts.get('averaging',0.5)
-    ETemp = opts.get('ETemp',False)
-    verbose = opts.get('verbose',False)
+    ConvCriteria = kwargs.get('ConvCriteria',Defaults.ConvergenceCriteria)
+    MaxIter = kwargs.get('MaxIter',Defaults.MaxIters)
+    DoAveraging = kwargs.get('DoAveraging',Defaults.Averaging)
+    averaging = kwargs.get('averaging',Defaults.MixingFraction)
+    ETemp = kwargs.get('ETemp',Defaults.ElectronTemperature)
+    verbose = kwargs.get('verbose')
 
-    bfs = opts.get('bfs',None)
-    if not bfs:
-        basis_data = opts.get('basis_data',None)
-        bfs = getbasis(atoms,basis_data)
+    bfs = getbasis(atoms,**kwargs)
 
-    integrals = opts.get('integrals', None)
-    if integrals:
-        S,h,Ints = integrals
-    else:
-        S,h,Ints = getints(bfs,atoms)
+    S,h,Ints = getints(bfs,atoms,**kwargs)
 
     nel = atoms.get_nel()
 
-    nalpha,nbeta = atoms.get_alphabeta() #pass in opts for multiplicity
-    S,h,Ints = getints(bfs,atoms)
+    nalpha,nbeta = atoms.get_alphabeta() #pass in kwargs for multiplicity
 
-    orbs = opts.get('orbs',None)
+    orbs = kwargs.get('orbs')
     if orbs!=None:
         #orbsa = orbsb = orbs
         orbsa = orbs[0]
@@ -264,12 +248,12 @@ def mk_auger_dens(c, occ):
     #pad_out(D)
     return D
 
-def uhf_fixed_occ(atoms,occa, occb,**opts):
+def uhf_fixed_occ(atoms,occa, occb,**kwargs):
     """\
     occa and occb represent the orbital occupation arrays for 
     the calculating spin orbitals with holes
     
-    uhf(atoms,**opts) - Unrestriced Open Shell Hartree Fock
+    uhf(atoms,**kwargs) - Unrestriced Open Shell Hartree Fock
     atoms       A Molecule object containing the molecule
 
     Options:      Value   Description
@@ -286,34 +270,23 @@ def uhf_fixed_occ(atoms,occa, occb,**opts):
 
     from biorthogonal import biorthogonalize,pad_out
 
-    ConvCriteria = opts.get('ConvCriteria',1e-5)
-    MaxIter = opts.get('MaxIter',40)
-    DoAveraging = opts.get('DoAveraging',True)
-    averaging = opts.get('averaging',0.5)
-    ETemp = opts.get('ETemp',False)
-    
-    bfs = opts.get('bfs',None)
-    if not bfs:
-        basis_data = opts.get('basis_data',None)
-        bfs = getbasis(atoms,basis_data)
+    ConvCriteria = kwargs.get('ConvCriteria',Defaults.ConvergenceCriteria)
+    MaxIter = kwargs.get('MaxIter',Defaults.MaxIters)
+    DoAveraging = kwargs.get('DoAveraging',Defaults.Averaging)
+    averaging = kwargs.get('averaging',Defaults.MixingFraction)
+    ETemp = kwargs.get('ETemp',Defaults.ElectronTemperature)
 
-    integrals = opts.get('integrals', None)
-    if integrals:
-        S,h,Ints = integrals
-    else:
-        S,h,Ints = getints(bfs,atoms)
+    bfs = getbasis(atoms,**kwargs)
+
+    S,h,Ints = getints(bfs,atoms,**kwargs)
 
     nel = atoms.get_nel()
 
-    nalpha,nbeta = atoms.get_alphabeta() #pass in opts for multiplicity
-    S,h,Ints = getints(bfs,atoms)
+    nalpha,nbeta = atoms.get_alphabeta() #pass in kwargs for multiplicity
 
-    orbsa = opts.get('orbsa',None)
-    orbsb = opts.get('orbsb',None)
-    if (orbsa!=None and orbsb!=None):
-        orbsa = orbsa
-        orbsb = orbsb
-    else:
+    orbsa = kwargs.get('orbsa')
+    orbsb = kwargs.get('orbsb')
+    if (orbsa == None or orbsb == None):
         orbe,orbs = geigh(h,S)
         orbea = orbeb = orbe
         orbsa = orbsb = orbs

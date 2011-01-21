@@ -12,7 +12,7 @@
  license. Please see the file LICENSE that is part of this
  distribution. 
 """
-
+import Defaults
 from PyQuante.Atom import Atom
 from PyQuante.Element import sym2no
 from PyQuante.Constants import bohr2ang,ang2bohr
@@ -30,7 +30,7 @@ allowed_units = ['bohr','angs']
 
 class Molecule:
     """\
-    Molecule(name,atomlist,**opts) - Object to hold molecular data in PyQuante
+    Molecule(name,atomlist,**kwargs) - Object to hold molecular data in PyQuante
 
     name       The name of the molecule
     atomlist   A list of (atno,(x,y,z)) information for the molecule
@@ -41,18 +41,18 @@ class Molecule:
     charge        0       The molecular charge
     multiplicity  1       The spin multiplicity of the molecule
     """
-    def __init__(self,name='molecule',atomlist=[],**opts):
+    def __init__(self,name='molecule',atomlist=[],**kwargs):
         self.name = name
         self.atoms = []
         self.basis = []
         self.grid = None
-        units = opts.get('units','bohr')
+        units = kwargs.get('units',Defaults.LengthUnits)
         units = units.lower()[:4]
         assert units in allowed_units
         self.units = units
         if atomlist: self.add_atuples(atomlist)
-        self.charge = int(opts.get('charge',0))
-        self.multiplicity = int(opts.get('multiplicity',1))
+        self.charge = int(kwargs.get('charge',Defaults.MolecularCharge))
+        self.multiplicity = int(kwargs.get('multiplicity',Defaults.SpinMultiplicity))
         return
     # Alternative constructors
     # @classmethod <- python2.4
@@ -196,8 +196,8 @@ class Molecule:
             raise Exception("Error in Molecule.get_closedopen()")
         return nclosed, nopen
 
-    def get_alphabeta(self,**opts):
-        nclosed,nopen = self.get_closedopen(**opts)
+    def get_alphabeta(self,**kwargs):
+        nclosed,nopen = self.get_closedopen(**kwargs)
         return nclosed+nopen,nclosed
 
     def com(self):
@@ -249,8 +249,8 @@ class Molecule:
     def __len__(self): return len(self.atoms)
 
     # These overloads let one create a subsystem from a list of atoms
-    def subsystem(self,name,indices,**opts):
-        submol = Molecule(name,None,**opts)
+    def subsystem(self,name,indices,**kwargs):
+        submol = Molecule(name,None,**kwargs)
         for i in indices: submol.add_atom(self.atoms[i])
         return submol
 
@@ -279,7 +279,7 @@ def cleansym(s):
     import re
     return re.split('[^a-zA-z]',s)[0]
 
-def ParseXYZLines(name,xyz_lines,**opts):
+def ParseXYZLines(name,xyz_lines,**kwargs):
     atoms = []
     for line in xyz_lines.splitlines():
         words = line.split()
@@ -287,7 +287,7 @@ def ParseXYZLines(name,xyz_lines,**opts):
         sym = cleansym(words[0])
         xyz = map(float,words[1:4])
         atoms.append((sym,xyz))
-    return Molecule(name,atoms,**opts)
+    return Molecule(name,atoms,**kwargs)
 
 def mol2mpqc(mol,**kwargs):
     xc = kwargs.get('xc','B3LYP')

@@ -9,7 +9,7 @@
  license. Please see the file LICENSE that is part of this
  distribution. 
 """
-
+import Defaults
 from CGBF import CGBF,coulomb
 #from contracted_gto import coulomb
 from NumWrap import zeros,dot,reshape
@@ -32,7 +32,7 @@ sorted = True
 jints = {}
 kints = {}
 
-def getbasis(atoms,basis_data=None,**opts):
+def getbasis(atoms,basis_data=None,**kwargs):
     """\
     bfs = getbasis(atoms,basis_data=None)
     
@@ -40,30 +40,19 @@ def getbasis(atoms,basis_data=None,**opts):
     constructed as a list of CGBF basis functions objects.
     """
     from PyQuante.Basis.basis import BasisSet
-    return BasisSet(atoms, basis_data, **opts)
-    # Option to omit f basis functions from imported basis sets
-    omit_f = opts.get('omit_f',False)
     if not basis_data:
-        from PyQuante.Basis.p631ss import basis_data
-    elif type(basis_data) == type(''):
-        # Assume this is a name of a basis set, e.g. '6-31g**'
-        #  and import dynamically
-        basis_data = get_basis_data(basis_data)
-    bfs = []
-    for atom in atoms:
-        bs = basis_data[atom.atno]
-        for sym,prims in bs:
-            if omit_f and sym == "F": continue
-            for power in sym2powerlist[sym]:
-                bf = CGBF(atom.pos(),power,atom.atid)
-                for expnt,coef in prims:
-                    bf.add_primitive(expnt,coef)
-                bf.normalize()
-                bfs.append(bf)
-    return bfs
+        basis_data = kwargs.get('basis_data')
+    if kwargs.get('bfs'):
+        return kwargs.get('bfs')
+    elif not basis_data:
+        basis = kwargs.get('basis')
+        if basis:
+            basis_data = get_basis_data(basis)
+    return BasisSet(atoms, basis_data, **kwargs)
 
-
-def getints(bfs,atoms):
+def getints(bfs,atoms,**kwargs):
+    if kwargs.get('integrals'):
+        return kwargs.get('integrals')
     logger.info("Calculating Integrals...")
     S,h = get1ints(bfs,atoms)
     Ints = get2ints(bfs)

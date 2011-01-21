@@ -38,18 +38,19 @@ etemp         False   Use etemp value for finite temperature DFT (default)
 The test suite at the bottom of the file has examples of usage.
 """
 
+import Defaults
 import unittest,logging
 logger = logging.getLogger("pyquante")
 class SCFIterator:
-    def __init__(self,**opts):
+    def __init__(self,**kwargs):
         self.energy_history = [0]
         self.converged = False
         return
 
-    def iterate(self,ham,**opts):
-        self.max_iter = opts.get('max_iter',50)
+    def iterate(self,ham,**kwargs):
+        self.max_iter = kwargs.get('max_iter',Defaults.MaxIter)
         for self.iter in xrange(1,self.max_iter+1):
-            ham.update(**opts)
+            ham.update(**kwargs)
             logging.debug("%d %f" % (self.iter,ham.energy))
             energy_var=abs(ham.energy - self.energy_history[-1]) 
             logger.info("Iteration: %d    Energy: %f    EnergyVar: %f"%
@@ -62,9 +63,9 @@ class SCFIterator:
                             % self.max_iter)
         return
 
-    def is_converged(self,ham,**opts):
+    def is_converged(self,ham,**kwargs):
         self.energy = ham.get_energy()
-        etol = opts.get('etol',1e-5)
+        etol = kwargs.get('etol',Defaults.ConvergenceCriteria)
         if not self.energy_history:
             self.energy_history.append(self.energy)
             return False
@@ -82,14 +83,11 @@ class SCFIterator:
         return "\n".join(lstr)
 
 class Integrals:
-    def __init__(self,molecule,basis_set,**opts):
+    def __init__(self,molecule,basis_set,**kwargs):
         from PyQuante.Ints import getints
-        integrals = opts.get("integrals",None)
+        integrals = kwargs.get("integrals")
         nbf = len(basis_set)
-        if integrals:
-            self.S, self.h, self.ERI = integrals
-        else:
-            self.S, self.h, self.ERI = getints(basis_set.get(),molecule)
+        self.S, self.h, self.ERI = getints(basis_set.get(),molecule,**kwargs)
         return
     
 
@@ -99,20 +97,11 @@ class Integrals:
     def get_ERI(self): return self.ERI
 
 class BasisSet:
-    def __init__(self,molecule,**opts):
+    def __init__(self,molecule,**kwargs):
         from PyQuante.Ints import getbasis
         from PyQuante.Basis.Tools import get_basis_data
 
-        basis_data = opts.get('basis_data')
-        bfs = opts.get('bfs')
-        if bfs:
-            self.bfs = bfs
-        else:
-            if not basis_data:
-                basis = opts.get('basis')
-                if basis:
-                    basis_data = get_basis_data(basis)
-            self.bfs = getbasis(molecule,basis_data)
+        self.bfs = getbasis(molecule,**kwargs)
         logger.info("%d basis functions" % len(self.bfs))
         return
     def __repr__(self): return 'Gaussian basis set with %d bfns' %  len(self.bfs)
@@ -123,40 +112,40 @@ class BasisSet:
 
 ########## Hamiltonian ##########
 
-def HamiltonianFactory(molecule,**opts):
-    method = opts.get('method','HF')
+def HamiltonianFactory(molecule,**kwargs):
+    method = kwargs.get('method',Defaults.HamiltonianMethod)
     if method == "UHF":
-        return UHFHamiltonian(molecule,**opts)
+        return UHFHamiltonian(molecule,**kwargs)
     elif method == 'ROHF':
-        return ROHFHamiltonian(molecule,**opts)
+        return ROHFHamiltonian(molecule,**kwargs)
     elif method == "DFT":
-        return DFTHamiltonian(molecule,**opts)
+        return DFTHamiltonian(molecule,**kwargs)
     elif method == 'MINDO3':
-        return MINDO3Hamiltonian(molecule,**opts)
+        return MINDO3Hamiltonian(molecule,**kwargs)
     elif method == 'UMINDO3':
-        return UMINDO3Hamiltonian(molecule,**opts)
-    return HFHamiltonian(molecule,**opts)
+        return UMINDO3Hamiltonian(molecule,**kwargs)
+    return HFHamiltonian(molecule,**kwargs)
 # Convenience function
-def SCF(molecule,**opts): return HamiltonianFactory(molecule,**opts)
+def SCF(molecule,**kwargs): return HamiltonianFactory(molecule,**kwargs)
 
 class AbstractHamiltonian:
-    def __init__(self,molecule,**opts):
+    def __init__(self,molecule,**kwargs):
         raise Exception("AbstractHamiltonian::__init__")
-    def update(self,**opts):
+    def update(self,**kwargs):
         raise Exception("AbstractHamiltonian::update")
-    def iterate(self,**opts):
+    def iterate(self,**kwargs):
         raise Exception("AbstractHamiltonian::iterate")
-    def get_energy(self,**opts):
+    def get_energy(self,**kwargs):
         raise Exception("AbstractHamiltonian::get_energy")
 
 class HFHamiltonian(AbstractHamiltonian):
     method='HF'
-    def __init__(self,molecule,**opts):
+    def __init__(self,molecule,**kwargs):
         from PyQuante.Convergence import DIIS
         self.molecule = molecule
         logger.info("HF calculation on system %s" % self.molecule.name)
-        self.basis_set = BasisSet(molecule,**opts)
-        self.integrals = Integrals(molecule,self.basis_set,**opts)
+        self.basis_set = BasisSet(molecule,**kwargs)
+        self.integrals = Integrals(molecule,self.basis_set,**kwargs)
         self.iterator = SCFIterator()
         self.h = self.integrals.get_h()
         self.S = self.integrals.get_S()
@@ -165,13 +154,13 @@ class HFHamiltonian(AbstractHamiltonian):
         self.F = self.h
         self.dmat = None
         self.entropy = None
-        self.DoAveraging = opts.get('DoAveraging',True)
+        self.DoAveraging = kwargs.get('DoAveraging',Defaults.Averaging)
         if self.DoAveraging:
             self.Averager = DIIS(self.S)
         nel = molecule.get_nel()
         nclosed,nopen = molecule.get_closedopen()
         logger.info("Nclosed/open = %d, %d" % (nclosed,nopen))
-        self.solver = SolverFactory(nel,nclosed,nopen,self.S,**opts)
+        self.solver = SolverFactory(nel,nclosed,nopen,self.S,**kwargs)
         return
 
     def __repr__(self):
@@ -182,19 +171,19 @@ class HFHamiltonian(AbstractHamiltonian):
         return '\n'.join(lstr)
 
     def get_energy(self): return self.energy
-    def iterate(self,**opts):
-        self.iterator.iterate(self,**opts)
+    def iterate(self,**kwargs):
+        self.iterator.iterate(self,**kwargs)
         if self.iterator.converged:
             logger.info("Final HF energy for system %s is %f"%(self.molecule.name,self.energy))
         return
 
-    def update(self,**opts):
+    def update(self,**kwargs):
         from PyQuante.LA2 import trace2
         from PyQuante.Ints import getJ,getK
 
         if self.DoAveraging and self.dmat is not None:
             self.F = self.Averager.getF(self.F,self.dmat)
-        self.dmat,self.entropy = self.solver.solve(self.F,**opts)
+        self.dmat,self.entropy = self.solver.solve(self.F,**kwargs)
         D = self.dmat
         
         self.J = getJ(self.ERI,D)
@@ -208,13 +197,13 @@ class HFHamiltonian(AbstractHamiltonian):
 
 class DFTHamiltonian(AbstractHamiltonian):
     method='DFT'
-    def __init__(self,molecule,**opts):
+    def __init__(self,molecule,**kwargs):
         from PyQuante.Convergence import DIIS
         from PyQuante.DFunctionals import need_gradients
         self.molecule = molecule
         logger.info("DFT calculation on system %s" % self.molecule.name)
-        self.basis_set = BasisSet(molecule,**opts)
-        self.integrals = Integrals(molecule,self.basis_set,**opts)
+        self.basis_set = BasisSet(molecule,**kwargs)
+        self.integrals = Integrals(molecule,self.basis_set,**kwargs)
         self.iterator = SCFIterator()
         self.h = self.integrals.get_h()
         self.S = self.integrals.get_S()
@@ -222,18 +211,18 @@ class DFTHamiltonian(AbstractHamiltonian):
         self.Enuke = molecule.get_enuke()
         self.nel = molecule.get_nel()
         self.F = self.h
-        self.functional = opts.get('functional','SVWN')
-        opts['do_grad_dens'] = need_gradients[self.functional]
-        self.setup_grid(molecule,self.basis_set.get(),**opts)
+        self.functional = kwargs.get('functional',Defaults.DFTFunctional)
+        kwargs['do_grad_dens'] = need_gradients[self.functional]
+        self.setup_grid(molecule,self.basis_set.get(),**kwargs)
         self.dmat = None
         self.entropy = None
-        self.DoAveraging = opts.get('DoAveraging',True)
+        self.DoAveraging = kwargs.get('DoAveraging',Defaults.DFTAveraging)
         if self.DoAveraging:
             self.Averager = DIIS(self.S)
         nel = molecule.get_nel()
         nclosed,nopen = molecule.get_closedopen()
         logger.info("Nclosed/open = %d, %d" % (nclosed,nopen))
-        self.solver = SolverFactory(nel,nclosed,nopen,self.S,**opts)
+        self.solver = SolverFactory(nel,nclosed,nopen,self.S,**kwargs)
         return
         
     def __repr__(self):
@@ -244,29 +233,29 @@ class DFTHamiltonian(AbstractHamiltonian):
         return '\n'.join(lstr)
 
     def get_energy(self): return self.energy
-    def iterate(self,**opts): return self.iterator.iterate(self,**opts)
+    def iterate(self,**kwargs): return self.iterator.iterate(self,**kwargs)
 
-    def setup_grid(self,molecule,bfs,**opts):
+    def setup_grid(self,molecule,bfs,**kwargs):
         #from PyQuante.MolecularGrid import MolecularGrid
         from PyQuante.MG2 import MG2 as MolecularGrid
-        grid_nrad = opts.get('grid_nrad',32)
-        grid_fineness = opts.get('grid_fineness',1)
-        self.gr = MolecularGrid(molecule,grid_nrad,grid_fineness,**opts) 
+        grid_nrad = kwargs.get('grid_nrad',Defaults.DFTGridRadii)
+        grid_fineness = kwargs.get('grid_fineness',Defaults.DFTGridFineness)
+        self.gr = MolecularGrid(molecule,grid_nrad,grid_fineness,**kwargs) 
         self.gr.set_bf_amps(bfs)
         return
 
-    def update(self,**opts):
+    def update(self,**kwargs):
         from PyQuante.LA2 import trace2
         from PyQuante.Ints import getJ
         from PyQuante.dft import getXC
 
-        #self.DoAveraging = opts.get('DoAveraging',True)
+        #self.DoAveraging = kwargs.get('DoAveraging',True)
         #if self.DoAveraging:
         #    self.Averager = DIIS(self.S)
 
         if self.DoAveraging and self.dmat is not None:
             self.F = self.Averager.getF(self.F,self.dmat)
-        self.dmat,self.entropy = self.solver.solve(self.F,**opts)
+        self.dmat,self.entropy = self.solver.solve(self.F,**kwargs)
         D = self.dmat
         
         self.gr.setdens(D)
@@ -284,11 +273,11 @@ class DFTHamiltonian(AbstractHamiltonian):
 
 class UHFHamiltonian(AbstractHamiltonian):
     method='UHF'
-    def __init__(self,molecule,**opts):
+    def __init__(self,molecule,**kwargs):
         self.molecule = molecule
         logger.info("UHF calculation on system %s" % self.molecule.name)
-        self.basis_set = BasisSet(molecule,**opts)
-        self.integrals = Integrals(molecule,self.basis_set,**opts)
+        self.basis_set = BasisSet(molecule,**kwargs)
+        self.integrals = Integrals(molecule,self.basis_set,**kwargs)
         self.iterator = SCFIterator()
         self.h = self.integrals.get_h()
         self.S = self.integrals.get_S()
@@ -303,8 +292,8 @@ class UHFHamiltonian(AbstractHamiltonian):
         self.entropy = None
         nalpha,nbeta = molecule.get_alphabeta()
         logger.info("Nalpha/beta = %d, %d" % (nalpha,nbeta))
-        self.solvera = SolverFactory(2*nalpha,nalpha,0,self.S,**opts)
-        self.solverb = SolverFactory(2*nbeta,nbeta,0,self.S,**opts)
+        self.solvera = SolverFactory(2*nalpha,nalpha,0,self.S,**kwargs)
+        self.solverb = SolverFactory(2*nbeta,nbeta,0,self.S,**kwargs)
         return
 
     def __repr__(self):
@@ -315,9 +304,9 @@ class UHFHamiltonian(AbstractHamiltonian):
         return '\n'.join(lstr)
 
     def get_energy(self): return self.energy
-    def iterate(self,**opts): return self.iterator.iterate(self,**opts)
+    def iterate(self,**kwargs): return self.iterator.iterate(self,**kwargs)
 
-    def update(self,**opts):
+    def update(self,**kwargs):
         from PyQuante.LA2 import trace2
         from PyQuante.Ints import getJ,getK
 
@@ -343,11 +332,11 @@ class UHFHamiltonian(AbstractHamiltonian):
 
 class ROHFHamiltonian(AbstractHamiltonian):
     method='ROHF'
-    def __init__(self,molecule,**opts):
+    def __init__(self,molecule,**kwargs):
         self.molecule = molecule
         logger.info("ROHF calculation on system %s" % self.molecule.name)
-        self.basis_set = BasisSet(molecule,**opts)
-        self.integrals = Integrals(molecule,self.basis_set,**opts)
+        self.basis_set = BasisSet(molecule,**kwargs)
+        self.integrals = Integrals(molecule,self.basis_set,**kwargs)
         self.iterator = SCFIterator()
         self.h = self.integrals.get_h()
         self.S = self.integrals.get_S()
@@ -369,9 +358,9 @@ class ROHFHamiltonian(AbstractHamiltonian):
         return '\n'.join(lstr)
 
     def get_energy(self): return self.energy
-    def iterate(self,**opts): return self.iterator.iterate(self,**opts)
+    def iterate(self,**kwargs): return self.iterator.iterate(self,**kwargs)
 
-    def update(self,**opts):
+    def update(self,**kwargs):
         from PyQuante.Ints import getJ,getK
         from PyQuante.LA2 import geigh,mkdens
         from PyQuante.rohf import ao2mo
@@ -425,7 +414,7 @@ class ROHFHamiltonian(AbstractHamiltonian):
 
 class MINDO3Hamiltonian(AbstractHamiltonian):
     method='MINDO3'
-    def __init__(self,molecule,**opts):
+    def __init__(self,molecule,**kwargs):
         from PyQuante.MINDO3 import initialize, get_nbf, get_reference_energy,\
              get_F0, get_nel,get_open_closed,get_enuke,get_guess_D
         self.molecule = molecule
@@ -460,9 +449,9 @@ class MINDO3Hamiltonian(AbstractHamiltonian):
         return '\n'.join(lstr)
 
     def get_energy(self): return self.energy
-    def iterate(self,**opts): return self.iterator.iterate(self,**opts)
+    def iterate(self,**kwargs): return self.iterator.iterate(self,**kwargs)
 
-    def update(self,**opts):
+    def update(self,**kwargs):
         self.update_fock()
         self.calculate_energy()
         self.solve_fock()
@@ -493,7 +482,7 @@ class MINDO3Hamiltonian(AbstractHamiltonian):
         self.energy = self.Etot*ev2kcal+self.eref
         
 class UMINDO3Hamiltonian(AbstractHamiltonian):
-    def __init__(self,molecule,**opts):
+    def __init__(self,molecule,**kwargs):
         from PyQuante.MINDO3 import initialize, get_nbf, get_reference_energy,\
              get_F0, get_nel,get_open_closed,get_enuke,get_guess_D
         self.molecule = molecule
@@ -530,9 +519,9 @@ class UMINDO3Hamiltonian(AbstractHamiltonian):
         return '\n'.join(lstr)
 
     def get_energy(self): return self.energy
-    def iterate(self,**opts): return self.iterator.iterate(self,**opts)
+    def iterate(self,**kwargs): return self.iterator.iterate(self,**kwargs)
 
-    def update(self,**opts):
+    def update(self,**kwargs):
         self.solve_fock()
         self.update_density()
         self.update_fock()
@@ -572,29 +561,29 @@ class UMINDO3Hamiltonian(AbstractHamiltonian):
 
 ########## Solver ##########
 
-def SolverFactory(nel,nclosed,nopen,S,**opts):
-    if opts.get("SolverConstructor"):
+def SolverFactory(nel,nclosed,nopen,S,**kwargs):
+    if kwargs.get("SolverConstructor"):
         # We can override all of this and pass in an explicit solver constructor:
-        return opts["SolverConstructor"](nel,nclosed,nopen,S,**opts)
-    if opts.get('etemp',False):
-        return FermiDiracSolver(nel,nclosed,nopen,S,**opts)
-    return BasicSolver(nel,nclosed,nopen,S,**opts)
+        return kwargs["SolverConstructor"](nel,nclosed,nopen,S,**kwargs)
+    if kwargs.get('etemp',Defaults.ElectronTemperature):
+        return FermiDiracSolver(nel,nclosed,nopen,S,**kwargs)
+    return BasicSolver(nel,nclosed,nopen,S,**kwargs)
 
 class AbstractSolver:
-    def __init__(self,S,**opts):
+    def __init__(self,S,**kwargs):
         raise Exception("AbstractSolver::__init__")
-    def solve(self,ham,**opts):
+    def solve(self,ham,**kwargs):
         raise Exception("AbstractSolver::solve")
 
 class BasicSolver(AbstractSolver):
-    def __init__(self,nel,nclosed,nopen,S,**opts):
+    def __init__(self,nel,nclosed,nopen,S,**kwargs):
         self.S = S
         self.nel = nel
         self.nclosed = nclosed
         self.nopen = nopen
         return
 
-    def solve(self,H,**opts):
+    def solve(self,H,**kwargs):
         from PyQuante.LA2 import geigh,mkdens_spinavg
         self.orbe,self.orbs = geigh(H,self.S)
         self.D = mkdens_spinavg(self.orbs,self.nclosed,self.nopen)
@@ -602,15 +591,15 @@ class BasicSolver(AbstractSolver):
         return self.D,self.entropy
 
 class FermiDiracSolver(AbstractSolver):
-    def __init__(self,nel,nclosed,nopen,S,**opts):
+    def __init__(self,nel,nclosed,nopen,S,**kwargs):
         self.S = S
         self.nel = nel
         self.nclosed = nclosed
         self.nopen = nopen
-        self.etemp = opts.get('etemp',0)
+        self.etemp = kwargs.get('etemp',Defaults.ElectronTemperature)
         return
 
-    def solve(self,H,**opts):
+    def solve(self,H,**kwargs):
         from PyQuante.LA2 import geigh
         from PyQuante.fermi_dirac import mkdens_fermi
         self.orbe,self.orbs = geigh(H,self.S)
@@ -619,17 +608,17 @@ class FermiDiracSolver(AbstractSolver):
         return self.D,self.entropy
 
 class SubspaceSolver(AbstractSolver):
-    def __init__(self,nel,nclosed,nopen,S,**opts):
+    def __init__(self,nel,nclosed,nopen,S,**kwargs):
         self.S = S
         self.nel = nel
         self.nclosed = nclosed
         self.nopen = nopen
         self.first_iteration = True
-        self.solver = opts.get("solver")
+        self.solver = kwargs.get("solver")
 
         # Determine nroots, which Davidson (and perhaps others) needs:
-        self.pass_nroots = opts.get("pass_nroots",False)
-        self.nvirt = opts.get("nvirt",1) # solve for 1 virtual orbital by default
+        self.pass_nroots = kwargs.get("pass_nroots")
+        self.nvirt = kwargs.get("nvirt",Defaults.SubspaceVirtualOrbs) # solve for 1 virtual orbital by default
         self.nroots = self.nclosed + self.nopen + self.nvirt
 
         if not self.solver:
@@ -637,7 +626,7 @@ class SubspaceSolver(AbstractSolver):
             self.solver = eigh
         return
 
-    def solve(self,H,**opts):
+    def solve(self,H,**kwargs):
         from PyQuante.LA2 import mkdens_spinavg,simx,geigh
         from PyQuante.NumWrap import matrixmultiply,eigh
         if self.first_iteration:
@@ -655,18 +644,18 @@ class SubspaceSolver(AbstractSolver):
         return self.D,self.entropy
 
 class DmatSolver(AbstractSolver):
-    def __init__(self,nel,nclosed,nopen,S,**opts):
+    def __init__(self,nel,nclosed,nopen,S,**kwargs):
         self.S = S
         self.nel = nel
         self.nclosed = nclosed
         self.nopen = nopen
-        self.solver = opts.get("solver")
+        self.solver = kwargs.get("solver")
         if not self.solver:
             from PyQuante.DMP import TCP
             self.solver = TCP
         return
 
-    def solve(self,H,**opts):
+    def solve(self,H,**kwargs):
         solver = self.solver(H,self.nclosed,self.S)
         solver.iterate()
         self.entropy = 0

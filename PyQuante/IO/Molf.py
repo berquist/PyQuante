@@ -31,7 +31,7 @@ def section(fname):
         recipient.append(line)
     return title_lines,atom_lines,basis_lines,orb_lines
 
-def parse_atoms(atom_lines,**opts):
+def parse_atoms(atom_lines,**kwargs):
     from PyQuante.Molecule import Molecule
     
     atomlist = []

@@ -11,11 +11,12 @@
 """
 
 from math import sqrt
+import Defaults
 from NumWrap import zeros,reshape,dot,array,matrixmultiply
 
 class GridPoint:
-    def __init__(self,x,y,z,w=1.0,**opts):
-        self.do_grad_dens = opts.get('do_grad_dens',False)
+    def __init__(self,x,y,z,w=1.0,**kwargs):
+        self.do_grad_dens = kwargs.get('do_grad_dens',Defaults.DFTDensityGradient)
         self._x = float(x)
         self._y = float(y)
         self._z = float(z)

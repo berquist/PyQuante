@@ -10,7 +10,8 @@ energy = 18.127533
 name = "OH MINDO/3"
 
 def main():
-    atomlist = Molecule('oh',atomlist = [(8,(0,0,0)),(1,(1.,0,0))],units='Angstrom')
+    atomlist = Molecule('oh',atomlist = [(8,(0,0,0)),(1,(1.,0,0))],units='Angstrom',
+                        multiplicity=2)
     en = scf(atomlist)
     return en
 

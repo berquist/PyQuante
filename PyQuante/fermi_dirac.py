@@ -10,6 +10,7 @@
  distribution. 
 """
 import sys
+import Defaults
 from NumWrap import matrixmultiply,transpose
 from math import exp,log
 from Constants import Kboltz
@@ -39,10 +40,10 @@ def mkdens_fermi(nel,orbe,orbs,e_temp):
     entropy = get_entropy(occs,e_temp)
     return D,entropy
 
-def mkdens_occs(c,occs,**opts):
+def mkdens_occs(c,occs,**kwargs):
     "Density matrix from a set of occupations (e.g. from FD expression)."
-    tol = opts.get('tol',1e-5)
-    verbose = opts.get('verbose',False)
+    tol = kwargs.get('tol',Defaults.FDOccTolerance)
+    verbose = kwargs.get('verbose')
     # Determine how many orbs have occupations greater than 0
     norb = 0
     for fi in occs:
@@ -79,7 +80,6 @@ def get_entropy(occs,temp):
         if (1-fi) > 1e-10:
             entropy += kT*(1.-fi)*log(1.-fi)
     return entropy
-    
 
 def get_fermi_occs(efermi,orbe,temp):
     occs = []
@@ -94,10 +94,10 @@ def get_t0_occs(nel,nbf):
     for i in xrange(nc,nc+no): occs[i] = 0.5
     return occs
 
-def get_efermi(nel,orbe,temp,**opts):
+def get_efermi(nel,orbe,temp,**kwargs):
     "Bisection method to get Fermi energy from Fermi-Dirac dist"
-    tol = opts.get('tol',1e-9)
-    verbose = opts.get('verbose',True)
+    tol = kwargs.get('tol',Defaults.FDTolerance)
+    verbose = kwargs.get('verbose')
 
     elow,ehigh = orbe[0]-100.,orbe[-1]
     nlow = 2*sum(get_fermi_occs(elow,orbe,temp))

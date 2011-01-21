@@ -17,6 +17,7 @@
  license. Please see the file LICENSE that is part of this
  distribution. 
 """
+import Defaults
 from PyQuante.Ints import getbasis,getints,getJ,getK,get2JmK
 from PyQuante.LA2 import mkdens,geigh,trace2,simx
 from PyQuante.NumWrap import zeros,transpose,matrixmultiply,eigh,dot
@@ -55,7 +56,7 @@ def get_orbs_in_shell(ish,noccsh,norb):
     return range(istart,iend)+range(vstart,vend)
 
 def get_os_fock(ish,nsh,f,a,b,h,Hs,**kwargs):
-    nof = kwargs.get('nof',False)
+    nof = kwargs.get('nof')
     # Form the Fock matrix for shell ish:
     if nof:
         F = h
@@ -123,8 +124,8 @@ def expmats(A):
     return expm(A)
 
 def expmat(A,**kwargs):
-    nmax = kwargs.get('nmax',12)
-    cut = kwargs.get('cut',1e-8)
+    nmax = kwargs.get('nmax',Defaults.ExpSteps)
+    cut = kwargs.get('cut',Defaults.ExpCutoff)
     E = identity(A.shape[0],'d')
     D = E
     for i in xrange(1,nmax):
@@ -213,27 +214,20 @@ def rohf_wag(atoms,noccsh=None,f=None,a=None,b=None,**kwargs):
 
     atoms      A Molecule object containing the system of interest
     """
-    ConvCriteria = kwargs.get('ConvCriteria',1e-4)
-    MaxIter = kwargs.get('MaxIter',25)
-    DoAveraging = kwargs.get('DoAveraging',False)
-    verbose = kwargs.get('verbose',True)
+    ConvCriteria = kwargs.get('ConvCriteria',Defaults.ConvergenceCriteria)
+    MaxIter = kwargs.get('MaxIter',Defaults.MaxIter)
+    DoAveraging = kwargs.get('DoAveraging',Defaults.Averaging)
+    verbose = kwargs.get('verbose')
 
-    bfs = kwargs.get('bfs',None)
-    if not bfs:
-        basis_data = kwargs.get('basis_data',None)
-        bfs = getbasis(atoms,basis_data)
+    bfs = getbasis(atoms,**kwargs)
 
-    integrals = kwargs.get('integrals', None)
-    if integrals:
-        S,h,Ints = integrals
-    else:
-        S,h,Ints = getints(bfs,atoms)
+    S,h,Ints = getints(bfs,atoms,**kwargs)
 
     nel = atoms.get_nel()
 
-    orbs = kwargs.get('orbs',None)
+    orbs = kwargs.get('orbs')
     if orbs is None:
-        orbe,orbs = geigh(h,S)
+        orbe,orbs = geigh(h,nS)
 
     nclosed,nopen = atoms.get_closedopen()
     nocc = nopen+nclosed
@@ -274,36 +268,28 @@ def rohf_wag(atoms,noccsh=None,f=None,a=None,b=None,**kwargs):
         eold = energy
     return energy,orbe,orbs
 
-def rohf(atoms,**opts):
+def rohf(atoms,**kwargs):
     """\
-    rohf(atoms,**opts) - Restriced Open Shell Hartree Fock
+    rohf(atoms,**kwargs) - Restriced Open Shell Hartree Fock
     atoms       A Molecule object containing the molecule
     """
 
-    ConvCriteria = opts.get('ConvCriteria',1e-5)
-    MaxIter = opts.get('MaxIter',40)
-    DoAveraging = opts.get('DoAveraging',True)
-    averaging = opts.get('averaging',0.95)
-    verbose = opts.get('verbose',True)
+    ConvCriteria = kwargs.get('ConvCriteria',Defaults.ConvergenceCriteria)
+    MaxIter = kwargs.get('MaxIter',Defaults.MaxIter)
+    DoAveraging = kwargs.get('DoAveraging',Defaults.Averaging)
+    averaging = kwargs.get('averaging',Defaults.MixingFraction)
+    verbose = kwargs.get('verbose')
 
-    bfs = opts.get('bfs',None)
-    if not bfs:
-        basis_data = opts.get('basis_data',None)
-        bfs = getbasis(atoms,basis_data)
+    bfs = getbasis(atoms,**kwargs)
     nbf = len(bfs)
 
-    integrals = opts.get('integrals', None)
-    if integrals:
-        S,h,Ints = integrals
-    else:
-        S,h,Ints = getints(bfs,atoms)
+    S,h,Ints = getints(bfs,atoms,**kwargs)
 
     nel = atoms.get_nel()
 
     nalpha,nbeta = atoms.get_alphabeta()
-    S,h,Ints = getints(bfs,atoms)
 
-    orbs = opts.get('orbs',None)
+    orbs = kwargs.get('orbs')
     if orbs is None:
         orbe,orbs = geigh(h,S)
     norbs = nbf

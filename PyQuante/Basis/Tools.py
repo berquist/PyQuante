@@ -103,11 +103,11 @@ def parse_gamess_basis(file,**kwargs):
                 bfs.append((sym,prims))
     return basis
 
-def main(**opts):
-    fname = opts.get('fname','/home/rmuller/dzvp_basis.txt')
-    oname = opts.get('oname','basis_dzvp.py')
+def main(**kwargs):
+    fname = kwargs.get('fname','/home/rmuller/dzvp_basis.txt')
+    oname = kwargs.get('oname','basis_dzvp.py')
     file = open(fname)
-    basis = parse_gamess_basis(file,**opts)
+    basis = parse_gamess_basis(file,**kwargs)
     string = pprint.pformat(basis)
     file = open(oname,'w').write('basis_data = %s' % string)
     return

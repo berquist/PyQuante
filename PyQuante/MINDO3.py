@@ -9,7 +9,7 @@
  license. Please see the file LICENSE that is part of this
  distribution. 
 """
-
+import Defaults
 from Constants import bohr2ang,e2,ev2kcal
 from MINDO3_Parameters import axy,Bxy
 from math import sqrt,exp,pow
@@ -350,11 +350,12 @@ def get_Hf(atoms,Eel):
     Etot = Eel + Enuke
     return Etot*ev2kcal+Eref
 
-def scf(atoms,**opts):
+def scf(atoms,**kwargs):
     "Driver routine for energy calculations"
-    chg = opts.get('chg',0)
-    mult = opts.get('mult',None)
-    verbose = opts.get('verbose',False)
+    chg = kwargs.get('chg',Defaults.MolecularCharge)
+    #mult = kwargs.get('mult',Defaults.SpinMultiplicity)
+    mult = atoms.multiplicity
+    verbose = kwargs.get('verbose')
 
     atoms = initialize(atoms)
     
@@ -369,19 +370,19 @@ def scf(atoms,**opts):
               "Enuke = %10.4f, Nbf = %d" % (Enuke,nbf)
     F0 = get_F0(atoms)
     if nopen:
-        Eel = scfopen(atoms,F0,nclosed+nopen,nclosed,**opts)
+        Eel = scfopen(atoms,F0,nclosed+nopen,nclosed,**kwargs)
     else:
-        Eel = scfclosed(atoms,F0,nclosed,**opts)
+        Eel = scfclosed(atoms,F0,nclosed,**kwargs)
     Etot = Eel+Enuke
     Hf = Etot*ev2kcal+eref
     if verbose: print "Final Heat of Formation = ",Hf
     return Hf
 
-def scfclosed(atoms,F0,nclosed,**opts):
+def scfclosed(atoms,F0,nclosed,**kwargs):
     "SCF procedure for closed-shell molecules"
-    verbose = opts.get('verbose',False)
-    do_avg = opts.get('avg',False)
-    maxiter = opts.get('maxiter',50)
+    verbose = kwargs.get('verbose')
+    do_avg = kwargs.get('avg',Defaults.MINDOAveraging)
+    maxiter = kwargs.get('maxiter',Defaults.MaxIter)
     D = get_guess_D(atoms)
     Eold = 0
     if do_avg: avg = SimpleAverager(do_avg)
@@ -402,9 +403,9 @@ def scfclosed(atoms,F0,nclosed,**opts):
         D = 2*mkdens(orbs,0,nclosed)
     return Eel
 
-def scfopen(atoms,F0,nalpha,nbeta,**opts):
+def scfopen(atoms,F0,nalpha,nbeta,**kwargs):
     "SCF procedure for open-shell molecules"
-    verbose = opts.get('verbose',False)
+    verbose = kwargs.get('verbose')
     D = get_guess_D(atoms)
     Da = 0.5*D
     Db = 0.5*D
@@ -488,9 +489,9 @@ def energy_forces_factories(atoms,**kwargs):
     # factory function also returns a list of initial coordinates. The two
     # functions and the initial coordinates are useful for calling the
     # optimizer functions.
-    verbose_level = kwargs.get('verbose_level',0)
-    return_etot_as_e = kwargs.get('return_etot_as_e',False)
-    numeric_forces = kwargs.get('numeric_forces',False)
+    verbose = kwargs.get('verbose')
+    return_etot_as_e = kwargs.get('return_etot_as_e',Defaults.MINDOReturnEtot)
+    numeric_forces = kwargs.get('numeric_forces',Defaults.MINDONumericForces)
     nat = len(atoms)
     coords = zeros(3*nat,'d')
     for i in xrange(nat):
@@ -502,7 +503,7 @@ def energy_forces_factories(atoms,**kwargs):
             for j in xrange(3):
                 atoms[i].r[j] = cnew[3*i+j]
         Hf,F = get_energy_forces(atoms,doforces=False)
-        if verbose_level > 1:
+        if verbose:
             print "MINDO3 energy calculation requested:"
             print atoms
             print Hf
@@ -521,7 +522,7 @@ def energy_forces_factories(atoms,**kwargs):
         for i in xrange(nat):
             for j in xrange(3):
                 F[3*i+j] = Forces[i,j]
-        if verbose_level > 0:
+        if verbose:
             print "MINDO3 gradient calculation requested:"
             print atoms
             print Hf
@@ -538,7 +539,7 @@ def energy_forces_factories(atoms,**kwargs):
                 E1 = Efunc(cnew+ei*dx)
                 ei[3*i+j] = 0.0
                 F[3*i+j] = (E1-E0)/dx
-        if verbose_level > 0:
+        if verbose:
             print "MINDO3 gradient calculation requested:"
             print atoms
             print Hf
@@ -564,16 +565,16 @@ def opt(atoms,**kwargs):
     Efinal = Efunc(copt)
     return Efinal,copt
 
-def get_energy_forces(atoms,**opts):
-    opts['return_energy'] = True
-    return numeric_forces(atoms,**opts)
+def get_energy_forces(atoms,**kwargs):
+    kwargs['return_energy'] = True
+    return numeric_forces(atoms,**kwargs)
 
-def numeric_forces(atoms,D=None,**opts):
+def numeric_forces(atoms,D=None,**kwargs):
     "Compute numerical forces on atoms"
     # D is ignored here.
-    dx = opts.get('dx',1e-6)
-    sym = opts.get('sym',True)
-    return_energy = opts.get('return_energy',False)
+    dx = kwargs.get('dx',Defaults.NumericForceDx)
+    sym = kwargs.get('sym',Defaults.NumericForceSym)
+    return_energy = kwargs.get('return_energy')
     nat = len(atoms)
     Forces = zeros((nat,3),'d')
     E0 = scf(atoms)

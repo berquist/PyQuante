@@ -34,7 +34,7 @@ def hf_force(mol,wf,bname):
 # the atom class which can later be accessed through 
 # atomlist[j].forces[i] which would give you component i
 # of the force on atom j
-    bset = getbasis(mol.atoms,bname)
+    bset = getbasis(mol.atoms,basis=bname)
      
     if wf.restricted:
         rhf_force(mol,wf,bset)

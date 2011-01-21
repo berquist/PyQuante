@@ -58,52 +58,52 @@ Unrestricted
     occs_a          Spin up occupation numbers
     occs_b          Spin down analog of occs_a
     """
-    def __init__(self,**opts):
+    def __init__(self,**kwargs):
         #orbital coefs, energies, and occupations for restricted calculations
-        self.orbs    = opts.get('orbs',None)
-        self.orbe    = opts.get('orbe',None)
-        self.nclosed = opts.get('nclosed',None)
-        self.nopen   = opts.get('nopen',None)
-        self.occs    = opts.get('occs',None)
+        self.orbs    = kwargs.get('orbs',None)
+        self.orbe    = kwargs.get('orbe',None)
+        self.nclosed = kwargs.get('nclosed',None)
+        self.nopen   = kwargs.get('nopen',None)
+        self.occs    = kwargs.get('occs',None)
         
         #orbital coefs, energies, and occupations for unrestricted calculations        
-        self.orbs_a = opts.get('orbs_a',None)
-        self.orbs_b = opts.get('orbs_b',None)
+        self.orbs_a = kwargs.get('orbs_a',None)
+        self.orbs_b = kwargs.get('orbs_b',None)
         
-        self.orbe_a = opts.get('orbe_a',None)
-        self.orbe_b = opts.get('orbe_b',None)
+        self.orbe_a = kwargs.get('orbe_a',None)
+        self.orbe_b = kwargs.get('orbe_b',None)
         
-        self.nalpha = opts.get('nalpha',None)
-        self.nbeta  = opts.get('nbeta',None)
+        self.nalpha = kwargs.get('nalpha',None)
+        self.nbeta  = kwargs.get('nbeta',None)
         
-        self.occs_a = opts.get('occs_a',None)
-        self.occs_b = opts.get('occs_b',None)
+        self.occs_a = kwargs.get('occs_a',None)
+        self.occs_b = kwargs.get('occs_b',None)
         
-        self.restricted   = opts.get('restricted',None)
-        self.unrestricted = opts.get('unrestricted',None)
-        self.fixedocc    = opts.get('fixedocc',None)
+        self.restricted   = kwargs.get('restricted',None)
+        self.unrestricted = kwargs.get('unrestricted',None)
+        self.fixedocc    = kwargs.get('fixedocc',None)
         return
         
-    def update_wf(self,**opts):
+    def update_wf(self,**kwargs):
         #use this function to update coef and eigenvalues within SCF loop
         #restricted
-        self.orbs    = opts.get(orbs,None)
-        self.orbe    = opts.get(orbe,None)
+        self.orbs    = kwargs.get(orbs,None)
+        self.orbe    = kwargs.get(orbe,None)
 
         #unrestricted
-        self.orbs_a = opts.get(orbs_a,None)
-        self.orbs_b = opts.get(orbs_b,None)
+        self.orbs_a = kwargs.get(orbs_a,None)
+        self.orbs_b = kwargs.get(orbs_b,None)
                 
-        self.orbe_a = opts.get(orbe_a,None)
-        self.orbe_b = opts.get(orbe_b,None)
+        self.orbe_a = kwargs.get(orbe_a,None)
+        self.orbe_b = kwargs.get(orbe_b,None)
         
         return
     
-    def set_occs(self,**opts):
+    def set_occs(self,**kwargs):
         #sets orbital occupation arrays
-        self.occs   = opts.get(occs,None)
-        self.occs_a = opts.get(occs_a,None)
-        self.occs_b = opts.get(occs_b,None)
+        self.occs   = kwargs.get(occs,None)
+        self.occs_a = kwargs.get(occs_a,None)
+        self.occs_b = kwargs.get(occs_b,None)
         
         return
         

@@ -76,13 +76,13 @@ def TransformInts(Ints,orbs1,orbs2, nocc):
     del temp,temp2,tempvec #force garbage collection now
     return MOInts, nbf
 
-def EN2(molecule,**opts):#
+def EN2(molecule,**kwargs):#
     "General wrapper for the simple CI method"
     nalpha,nbeta = molecule.get_alphabeta()
     bfs = getbasis(molecule)
     S,h,Ints = getints(bfs,molecule)
     energy,(orbea,orbeb),(orbsa,orbsb) = uhf(molecule,integrals=(S,h,Ints),
-                                             bfs=bfs,**opts)
+                                             bfs=bfs,**kwargs)
     EHF = energy
     print "The Hatree-Fock energy is ",EHF
     #compute the transformed molecular orbital integrals

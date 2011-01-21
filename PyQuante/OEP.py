@@ -1,6 +1,7 @@
 "Yang/Wu's OEP implementation, in PyQuante."
 
 from math import sqrt
+import Defaults
 from PyQuante.NumWrap import zeros,matrixmultiply,transpose,dot,identity,\
      array,solve
 from PyQuante.Ints import getbasis, getints, getJ,get2JmK,getK
@@ -52,9 +53,9 @@ class EXXSolver:
         self.b = zeros(self.nbf,'d')
         return
 
-    def iterate(self,**opts):
+    def iterate(self,**kwargs):
         self.iter = 0
-        self.etemp = opts.get("etemp",False)
+        self.etemp = kwargs.get("etemp",Defaults.DFTElectronTemperature)
         logging.debug("iter    Energy     <b|b>")
         logging.debug("----    ------     -----")
         self.b = fminBFGS(self.get_energy,self.b,self.get_gradient,logger=logging)
@@ -134,8 +135,8 @@ class UEXXSolver:
         self.b = zeros(2*self.nbf,'d')
         return
 
-    def iterate(self,**opts):
-        self.etemp = opts.get("etemp",False)
+    def iterate(self,**kwargs):
+        self.etemp = kwargs.get("etemp",Defaults.DFTElectronTemperature)
         self.iter = 0
         logging.debug("iter    Energy     <b|b>")
         logging.debug("----    ------     -----")
@@ -204,19 +205,19 @@ class UEXXSolver:
         #logging.debug("EXX  Grad: %10.5f" % (sqrt(dot(bp,bp))))
         return bp
         
-def exx(atoms,orbs,**opts):
-    return oep_hf(atoms,orbs,**opts)
+def exx(atoms,orbs,**kwargs):
+    return oep_hf(atoms,orbs,**kwargs)
 
-def oep_hf(atoms,orbs,**opts):
+def oep_hf(atoms,orbs,**kwargs):
     """oep_hf - Form the optimized effective potential for HF exchange.
        See notes on options and other args in oep routine.
     """
-    return oep(atoms,orbs,get_exx_energy,get_exx_gradient,**opts)
+    return oep(atoms,orbs,get_exx_energy,get_exx_gradient,**kwargs)
 
-def oep(atoms,orbs,energy_func,grad_func=None,**opts):
+def oep(atoms,orbs,energy_func,grad_func=None,**kwargs):
     """oep - Form the optimized effective potential for a given energy expression
 
-    oep(atoms,orbs,energy_func,grad_func=None,**opts)
+    oep(atoms,orbs,energy_func,grad_func=None,**kwargs)
 
     atoms       A Molecule object containing a list of the atoms
     orbs        A matrix of guess orbitals
@@ -234,26 +235,19 @@ def oep(atoms,orbs,energy_func,grad_func=None,**opts):
     integrals     None    The one- and two-electron integrals to use
                           If not None, S,h,Ints
     """
-    verbose = opts.get('verbose',False)
-    ETemp = opts.get('ETemp',False)
-    opt_method = opts.get('opt_method','BFGS')
+    verbose = kwargs.get('verbose')
+    ETemp = kwargs.get('ETemp',Defaults.DFTElectronTemperature)
+    opt_method = kwargs.get('opt_method',Defaults.OEPOptMethod)
 
-    bfs = opts.get('bfs',None)
-    if not bfs:
-        basis = opts.get('basis',None)
-        bfs = getbasis(atoms,basis)
+    bfs = getbasis(atoms,**kwargs)
 
     # The basis set for the potential can be set different from
     #  that used for the wave function
-    pbfs = opts.get('pbfs',None) 
+    pbfs = kwargs.get('pbfs') 
     if not pbfs: pbfs = bfs
     npbf = len(pbfs)
 
-    integrals = opts.get('integrals',None)
-    if integrals:
-        S,h,Ints = integrals
-    else:
-        S,h,Ints = getints(bfs,atoms)
+    S,h,Ints = getints(bfs,atoms,**kwargs)
 
     nel = atoms.get_nel()
     nocc,nopen = atoms.get_closedopen()
@@ -265,7 +259,7 @@ def oep(atoms,orbs,energy_func,grad_func=None,**opts):
     norb = nbf
     bp = zeros(nbf,'d')
 
-    bvec = opts.get('bvec',None)
+    bvec = kwargs.get('bvec')
     if bvec:
         assert len(bvec) == npbf
         b = array(bvec)
@@ -310,7 +304,7 @@ def oep(atoms,orbs,energy_func,grad_func=None,**opts):
     return energy,orbe,orbs
 
 
-def get_exx_energy(b,nbf,nel,nocc,ETemp,Enuke,S,h,Ints,H0,Gij,**opts):
+def get_exx_energy(b,nbf,nel,nocc,ETemp,Enuke,S,h,Ints,H0,Gij,**kwargs):
     """Computes the energy for the OEP/HF functional
 
     Options:
@@ -318,7 +312,7 @@ def get_exx_energy(b,nbf,nel,nocc,ETemp,Enuke,S,h,Ints,H0,Gij,**opts):
                    1   Return energy, orbe, orbs
                    2   Return energy, orbe, orbs, F
     """
-    return_flag = opts.get('return_flag',0)
+    return_flag = kwargs.get('return_flag')
     Hoep = get_Hoep(b,H0,Gij)
     orbe,orbs = geigh(Hoep,S)
         
@@ -345,7 +339,7 @@ def get_exx_energy(b,nbf,nel,nocc,ETemp,Enuke,S,h,Ints,H0,Gij,**opts):
         return energy,orbe,orbs,F
     return energy
 
-def get_exx_gradient(b,nbf,nel,nocc,ETemp,Enuke,S,h,Ints,H0,Gij,**opts):
+def get_exx_gradient(b,nbf,nel,nocc,ETemp,Enuke,S,h,Ints,H0,Gij,**kwargs):
     """Computes the gradient for the OEP/HF functional.
 
     return_flag    0   Just return gradient
@@ -378,7 +372,7 @@ def get_exx_gradient(b,nbf,nel,nocc,ETemp,Enuke,S,h,Ints,H0,Gij,**opts):
                 bp[g] = bp[g] + Fmo[i,a]*Gmo[i,a]/(orbe[i]-orbe[a])
 
     #logging.debug("EXX  Grad: %10.5f" % (sqrt(dot(bp,bp))))
-    return_flag = opts.get('return_flag',0)
+    return_flag = kwargs.get('return_flag')
     if return_flag == 1:
         return energy,bp
     elif return_flag == 2:
@@ -395,13 +389,13 @@ def get_Hoep(b,H0,Gij):
 
 # Here's a much faster way to do this. Haven't figured out how to
 #  do it for more generic functions like OEP-GVB
-def oep_hf_an(atoms,orbs,**opts):
+def oep_hf_an(atoms,orbs,**kwargs):
     """oep_hf - Form the optimized effective potential for HF exchange.
 
     Implementation of Wu and Yang's Approximate Newton Scheme
     from J. Theor. Comp. Chem. 2, 627 (2003).
 
-    oep_hf(atoms,orbs,**opts)
+    oep_hf(atoms,orbs,**kwargs)
 
     atoms       A Molecule object containing a list of the atoms
     orbs        A matrix of guess orbitals
@@ -414,24 +408,17 @@ def oep_hf_an(atoms,orbs,**opts):
     integrals     None    The one- and two-electron integrals to use
                           If not None, S,h,Ints
     """
-    maxiter = opts.get('maxiter',100)
-    tol = opts.get('tol',1e-5)
-    bfs = opts.get('bfs',None)
-    if not bfs:
-        basis = opts.get('basis',None)
-        bfs = getbasis(atoms,basis)
+    maxiter = kwargs.get('maxiter',Defaults.OEPIters)
+    tol = kwargs.get('tol',Defaults.OEPTolerance)
+    bfs = getbasis(atoms,**kwargs)
 
     # The basis set for the potential can be set different from
     #  that used for the wave function
-    pbfs = opts.get('pbfs',None) 
+    pbfs = kwargs.get('pbfs') 
     if not pbfs: pbfs = bfs
     npbf = len(pbfs)
 
-    integrals = opts.get('integrals',None)
-    if integrals:
-        S,h,Ints = integrals
-    else:
-        S,h,Ints = getints(bfs,atoms)
+    S,h,Ints = getints(bfs,atoms)
 
     nel = atoms.get_nel()
     nocc,nopen = atoms.get_closedopen()
@@ -443,7 +430,7 @@ def oep_hf_an(atoms,orbs,**opts):
     norb = nbf
     bp = zeros(nbf,'d')
 
-    bvec = opts.get('bvec',None)
+    bvec = kwargs.get('bvec')
     if bvec:
         assert len(bvec) == npbf
         b = array(bvec)
@@ -522,13 +509,13 @@ def oep_hf_an(atoms,orbs,**opts):
     logger.info("Final OEP energy = %f" % energy)
     return energy,orbe,orbs
 
-def oep_uhf_an(atoms,orbsa,orbsb,**opts):
+def oep_uhf_an(atoms,orbsa,orbsb,**kwargs):
     """oep_hf - Form the optimized effective potential for HF exchange.
 
     Implementation of Wu and Yang's Approximate Newton Scheme
     from J. Theor. Comp. Chem. 2, 627 (2003).
 
-    oep_uhf(atoms,orbs,**opts)
+    oep_uhf(atoms,orbs,**kwargs)
 
     atoms       A Molecule object containing a list of the atoms
     orbs        A matrix of guess orbitals
@@ -541,25 +528,18 @@ def oep_uhf_an(atoms,orbsa,orbsb,**opts):
     integrals     None    The one- and two-electron integrals to use
                           If not None, S,h,Ints
     """
-    maxiter = opts.get('maxiter',100)
-    tol = opts.get('tol',1e-5)
-    ETemp = opts.get('ETemp',False)
-    bfs = opts.get('bfs',None)
-    if not bfs:
-        basis = opts.get('basis',None)
-        bfs = getbasis(atoms,basis)
+    maxiter = kwargs.get('maxiter',Defaults.OEPIters)
+    tol = kwargs.get('tol',Defaults.OEPTolerance)
+    ETemp = kwargs.get('ETemp',Defaults.DFTElectronTemperature)
+    bfs = getbasis(atoms,**kwargs)
 
     # The basis set for the potential can be set different from
     #  that used for the wave function
-    pbfs = opts.get('pbfs',None) 
+    pbfs = kwargs.get('pbfs') 
     if not pbfs: pbfs = bfs
     npbf = len(pbfs)
 
-    integrals = opts.get('integrals',None)
-    if integrals:
-        S,h,Ints = integrals
-    else:
-        S,h,Ints = getints(bfs,atoms)
+    S,h,Ints = getints(bfs,atoms,**kwargs)
 
     nel = atoms.get_nel()
     nclosed,nopen = atoms.get_closedopen()

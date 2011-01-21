@@ -17,20 +17,21 @@
  distribution. 
 """
 from math import sqrt
+import Defaults
 from AtomicGrid import AtomicGrid, Bragg
 from NumWrap import array,reshape,zeros,dot
 from PyQuante.cints import dist2
 
 class MolecularGrid:
     "Class to hold grid information from patched atomic grids"
-    def __init__(self, atoms, nrad=32, fineness=1,**opts):
+    def __init__(self, atoms, nrad=32, fineness=1,**kwargs):
         self.version = 1
-        self.do_grad_dens = opts.get('do_grad_dens',False)
+        self.do_grad_dens = kwargs.get('do_grad_dens',Defaults.DFTDensityGradient)
         self.atoms = atoms
         self.nrad = nrad 
         self.fineness = fineness
-        self.make_atom_grids(**opts)
-        self.patch_atoms(**opts)
+        self.make_atom_grids(**kwargs)
+        self.patch_atoms(**kwargs)
         self.calc_length()
         self._points = self.points()
         self._weights = self.weights()
@@ -50,16 +51,16 @@ class MolecularGrid:
             self._length += len(agr)
         return
 
-    def make_atom_grids(self,**opts):
+    def make_atom_grids(self,**kwargs):
         self.atomgrids = []
-        opts['nrad'] = self.nrad
-        opts['fineness'] = self.fineness
+        kwargs['nrad'] = self.nrad
+        kwargs['fineness'] = self.fineness
         for atom in self.atoms:
-            atom.grid = AtomicGrid(atom, **opts)
+            atom.grid = AtomicGrid(atom, **kwargs)
             self.atomgrids.append(atom.grid)
         return
 
-    def patch_atoms_naive(self,**opts):
+    def patch_atoms_naive(self,**kwargs):
         """\
         This was the original PyQuante patching scheme. It simply
         cuts off the grid at the voronai polyhedra. That is, if a
@@ -81,7 +82,7 @@ class MolecularGrid:
                     if rjp2 < rip2: point._w = 0
         return
     
-    def patch_atoms(self,**opts):
+    def patch_atoms(self,**kwargs):
         """\
         This is Becke's patching algorithm. Attempting to implement
         the normalization that is in eq 22 of that reference.
@@ -98,7 +99,7 @@ class MolecularGrid:
                 Pnum = 1
                 Pdenom = 0
                 for jat in xrange(nat):
-                    bap = becke_atomic_grid_p(jat,(xp,yp,zp),self.atoms,**opts)
+                    bap = becke_atomic_grid_p(jat,(xp,yp,zp),self.atoms,**kwargs)
                     Pdenom += bap
                     if iat == jat: P_iat = bap
                 Ptot = P_iat/Pdenom
@@ -111,17 +112,17 @@ class MolecularGrid:
         for agr in self.atomgrids: p.extend(agr.points)
         return p
 
-    def set_bf_amps(self,bfs,**opts):
+    def set_bf_amps(self,bfs,**kwargs):
         "Set the basis func amplitude at each grid point"
-        for agr in self.atomgrids: agr.set_bf_amps(bfs,**opts)
+        for agr in self.atomgrids: agr.set_bf_amps(bfs,**kwargs)
         self.make_bfgrid()
         if self.do_grad_dens:
             self.make_bfgrads()
         return
 
-    def setdens(self,D,**opts):
+    def setdens(self,D,**kwargs):
         "Set the density at each grid point"
-        for agr in self.atomgrids: agr.setdens(D,**opts)
+        for agr in self.atomgrids: agr.setdens(D,**kwargs)
         return
 
     def weights(self):
@@ -231,8 +232,8 @@ def fbecke(x,n=3):
 def pbecke(x): return 1.5*x-0.5*pow(x,3)
 def sbecke(x,n=3): return 0.5*(1-fbecke(x,n))
 
-def becke_atomic_grid_p(iat,(xp,yp,zp),atoms,**opts):
-    do_becke_hetero = opts.get('do_becke_hetero',True)
+def becke_atomic_grid_p(iat,(xp,yp,zp),atoms,**kwargs):
+    do_becke_hetero = kwargs.get('do_becke_hetero',Defaults.DFTBeckeHetero)
     nat = len(atoms)
     sprod = 1
     ati = atoms[iat]

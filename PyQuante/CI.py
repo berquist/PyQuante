@@ -155,7 +155,6 @@ def TransformInts(Ints,orbs):
 
 
 def test():
-    from Ints import getbasis,getints
     from hartree_fock import rhf
     from Molecule import Molecule
 
