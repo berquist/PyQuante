@@ -3914,6 +3914,49 @@ Changes before next major point release:
     atom.Z
   - Use molecule.get_nel() rather than MINDO3.get_nel() in mindo
 
+Jussi wishlist:
+* Extend the basis set definitions to handle shells of larger angular
+ momentum. I would suggest doing this on-the-fly by using
+ the libint-style algorithm
+
+ for(int i=0; i<=am; i++) {
+   int nx = am - i;
+   for(int j=0; j<=i; j++) {
+     int ny = i-j;
+     int nz = j;
+
+     add_function(nx,ny,nz);
+    }
+ }
+
+* Obara-Saika evaluation of 1-electron integrals.
+ I did this for my own code that is under development, it speeded up
+ the evaluation by something like 25-30x. The most important bit are
+ the nuclear attraction integrals: with big basis sets the THO routine
+ is awfully slow. An OS routine will do it a *lot* faster.
+
+* Implementation of a spherical harmonics basis.
+ This is useful for basis sets with high angular momentum. The
+ generation of the conversion matrices is a simple task (a couple of
+ hundred lines of C++ code); one just has to convert the integrals to
+ the spherical harmonics basis after they have been evaluated with
+ cartesians. The memory requirements can be reduced by a significant
+ amount, but the handicap is in the necessity of doing the 2-electron
+ integral transforms.
+
+* Direct formation of the Fock matrix
+ I've done this in my own code that uses libint, however currently the
+ implementation is a bit messy and a lot slower than using tabled
+ integrals.
+ Why is this important? For instance in an aug-cc-pVTZ calculation of
+ the water dimer (184 basis functions) the ERIs take 1 G 158 M of
+ memory. Going to aug-cc-pVQZ the memory requirement is already 14 G 85
+ M. 
+
+* Density fitting basis sets for pure DFT.
+ This makes pure DFT calculations faster by at least an order of
+ magnitude, since 2-electron integrals don't need to be calculated.
+
 Someday/maybe
 * Integrate Hatem's leapfrog.py with the stuff in Dynamics.py
 * Divide-and-conquer linear scaling 
