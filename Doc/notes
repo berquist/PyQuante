@@ -3881,24 +3881,45 @@ installation barf, plus a few more minor bugs along the way.
   dft grids into the MolecularGrid module.
 * Created a new routine MG2 that contains the new molecular grids.
 
+-----2011-01-11-----
+Intended changes before the next PyQuante minor point release:
+* Create a Defaults.py module that keeps program-wide default
+  information; make sure that defaults can always be overrided by
+  kwargs, but also make sure that anytime kwargs gets a default
+  response, it's from Defaults and not something hardwired.
+* Redo the integral code:
+  - Separate one_e ints from two_e ints
+  - Two different flags (C vs Python, and which package) control ints
+    now. 
+  - Make the libint call analogous to the cint or crys calls. The
+    branch point may have to be moved to an earlier point in the code. 
+  - Kill the fact in pyints, using math.factorial instead
+  - Address Jussi's integral question in pyints/cints
+  - Two e integral test suite
+  - Code should all work even if Cython not installed
+  - C-code compile without error messages
+* Implement Jussi's ccbasis functions
 
-TODO LIST
+Changes before next major point release:
+* GGA:
+  - BLYP
+  - Consistent testing with libxc
+  - LSD
+* Numerical Frequencies & Thermochemistry
+* Rotion type ROHF (+ GVB?)
+* MINDO cleaning:
+  - Remove verbosity from MINDO routines
+  - Unify (or subclass) MINDO3 atoms with normal atoms
+  - Use atom.get_nel_mindo() in Mindo routines rather than 
+    atom.Z
+  - Use molecule.get_nel() rather than MINDO3.get_nel() in mindo
+
+Someday/maybe
 * Integrate Hatem's leapfrog.py with the stuff in Dynamics.py
-* Separate out One-e integrals from Two-e integrals in py/cints
 * Divide-and-conquer linear scaling 
-* Remove verbosity from MINDO routines
-* udft module in dft
 * DIIS in uhf
-* Unify (or subclass) MINDO3 atoms with normal atoms
-* Use atom.get_nel_mindo() in Mindo routines rather than 
-  atom.Z
-* Use molecule.get_nel() rather than MINDO3.get_nel() in mindo
 * Forces/Geometry Optimization
 * Symmetry
-* Restricted open-shell Hartree-Fock & GVB
-* Numerical Frequencies & Thermochemistry
-* LSD
-* GGA
 * Hybrid functionals
 * CI/MCSCF
 * MPn/CCSD
