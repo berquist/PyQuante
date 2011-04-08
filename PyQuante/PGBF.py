@@ -136,7 +136,7 @@ class PGBF(PrimitiveGTO):
 
     def prim_str(self,topnorm=1):
         return "    <prim exp=\"%6.4f\" coeff=\"%6.4f\" ncoeff=\"%6.4f\"/>\n" \
-               % (self.exp(),self.coef,topnorm*self.norm*self.coef)
+               % (self.exp,self.coef,topnorm*self.norm*self.coef)
 
     def laplacian(self,pos):
         amp = self.amp(pos[0],pos[1],pos[2])

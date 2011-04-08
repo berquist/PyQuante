@@ -16,7 +16,7 @@
 import Defaults
 import logging
 from math import sqrt
-from NumWrap import matrixmultiply,identity,zeros,eigh,cholesky,inv
+from NumWrap import matrixmultiply,identity,zeros,eigh,cholesky,inv,dot
 
 # Note: to be really smart in a quantum chemistry program, we would
 #  want to only symmetrically orthogonalize the S matrix once, since
