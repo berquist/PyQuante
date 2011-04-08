@@ -92,6 +92,7 @@ class DIIS:
         err = ravel(err)
         maxerr = max(abs(err))
         self.maxerr = maxerr
+        print "DIIS maxerr = ",maxerr
 
         if maxerr < self.errcutoff and not self.started:
             if VERBOSE: print "Starting DIIS: Max Err = ",maxerr
@@ -127,6 +128,7 @@ class DIIS:
         try:
             c = solve(a,b)
         except:
+            print "Solve failed in DIIS"
             self.Fold = F
             return F
         
