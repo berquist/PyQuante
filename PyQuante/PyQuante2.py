@@ -69,7 +69,9 @@ class SCFIterator:
         if not self.energy_history:
             self.energy_history.append(self.energy)
             return False
-        self.converged = abs(self.energy-self.energy_history[-1]) < etol
+        dE = abs(self.energy-self.energy_history[-1])
+        self.converged = dE < etol
+        print self.energy,dE,etol,self.converged
         self.energy_history.append(self.energy)
         return self.converged
 

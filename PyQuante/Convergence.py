@@ -92,7 +92,6 @@ class DIIS:
         err = ravel(err)
         maxerr = max(abs(err))
         self.maxerr = maxerr
-        print "DIIS maxerr = ",maxerr
 
         if maxerr < self.errcutoff and not self.started:
             if VERBOSE: print "Starting DIIS: Max Err = ",maxerr
