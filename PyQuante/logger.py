@@ -3,6 +3,7 @@ This module sets the output properties and configurations
 '''
 import logging
 import sys
+
 # Output logger creation and initialization
 output = logging.getLogger("pyquante")
 output.propagate = 0 # Avoid propagator to the root logger, may interfere with other applications

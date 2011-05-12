@@ -1,6 +1,13 @@
 """\
 Defaults.py - PyQuante-wide program defaults.
 """
+import logging
+
+# Logging/verbosity
+LoggingFilename = 'pyquante.log'
+LoggingLevel = logging.INFO
+TestVerbosity = 1 # 0 = None, 1=Some, 2=Lots
+TestProfile = False
 
 # SCF flags
 MaxIter = 30

@@ -40,7 +40,9 @@ The test suite at the bottom of the file has examples of usage.
 
 import Defaults
 import unittest,logging
-logger = logging.getLogger("pyquante")
+
+logging.basicConfig(level=Defaults.LoggingLevel,
+                    filename=Defaults.LoggingFilename)
 class SCFIterator:
     def __init__(self,**kwargs):
         self.energy_history = [0]
@@ -53,13 +55,13 @@ class SCFIterator:
             ham.update(**kwargs)
             logging.debug("%d %f" % (self.iter,ham.energy))
             energy_var=abs(ham.energy - self.energy_history[-1]) 
-            logger.info("Iteration: %d    Energy: %f    EnergyVar: %f"%
+            logging.info("Iteration: %d    Energy: %f    EnergyVar: %f"%
                         (self.iter,ham.energy,energy_var))
             if self.is_converged(ham): break
         if self.iter < self.max_iter:
-            logger.info("PyQuante converged in %d iterations" % self.iter)
+            logging.info("PyQuante converged in %d iterations" % self.iter)
         else:
-            logger.warning("PyQuante failed to converge after %d iterations"
+            logging.warning("PyQuante failed to converge after %d iterations"
                             % self.max_iter)
         return
 
@@ -71,7 +73,7 @@ class SCFIterator:
             return False
         dE = abs(self.energy-self.energy_history[-1])
         self.converged = dE < etol
-        print self.energy,dE,etol,self.converged
+        #print self.energy,dE,etol,self.converged
         self.energy_history.append(self.energy)
         return self.converged
 
@@ -104,7 +106,7 @@ class BasisSet:
         from PyQuante.Basis.Tools import get_basis_data
 
         self.bfs = getbasis(molecule,**kwargs)
-        logger.info("%d basis functions" % len(self.bfs))
+        logging.info("%d basis functions" % len(self.bfs))
         return
     def __repr__(self): return 'Gaussian basis set with %d bfns' %  len(self.bfs)
     def __len__(self): return len(self.bfs)
@@ -145,7 +147,7 @@ class HFHamiltonian(AbstractHamiltonian):
     def __init__(self,molecule,**kwargs):
         from PyQuante.Convergence import DIIS
         self.molecule = molecule
-        logger.info("HF calculation on system %s" % self.molecule.name)
+        logging.info("HF calculation on system %s" % self.molecule.name)
         self.basis_set = BasisSet(molecule,**kwargs)
         self.integrals = Integrals(molecule,self.basis_set,**kwargs)
         self.iterator = SCFIterator()
@@ -161,7 +163,7 @@ class HFHamiltonian(AbstractHamiltonian):
             self.Averager = DIIS(self.S)
         nel = molecule.get_nel()
         nclosed,nopen = molecule.get_closedopen()
-        logger.info("Nclosed/open = %d, %d" % (nclosed,nopen))
+        logging.info("Nclosed/open = %d, %d" % (nclosed,nopen))
         self.solver = SolverFactory(nel,nclosed,nopen,self.S,**kwargs)
         return
 
@@ -176,7 +178,7 @@ class HFHamiltonian(AbstractHamiltonian):
     def iterate(self,**kwargs):
         self.iterator.iterate(self,**kwargs)
         if self.iterator.converged:
-            logger.info("Final HF energy for system %s is %f"%(self.molecule.name,self.energy))
+            logging.info("Final HF energy for system %s is %f"%(self.molecule.name,self.energy))
         return
 
     def update(self,**kwargs):
@@ -203,7 +205,7 @@ class DFTHamiltonian(AbstractHamiltonian):
         from PyQuante.Convergence import DIIS
         from PyQuante.DFunctionals import need_gradients
         self.molecule = molecule
-        logger.info("DFT calculation on system %s" % self.molecule.name)
+        logging.info("DFT calculation on system %s" % self.molecule.name)
         self.basis_set = BasisSet(molecule,**kwargs)
         self.integrals = Integrals(molecule,self.basis_set,**kwargs)
         self.iterator = SCFIterator()
@@ -223,7 +225,7 @@ class DFTHamiltonian(AbstractHamiltonian):
             self.Averager = DIIS(self.S)
         nel = molecule.get_nel()
         nclosed,nopen = molecule.get_closedopen()
-        logger.info("Nclosed/open = %d, %d" % (nclosed,nopen))
+        logging.info("Nclosed/open = %d, %d" % (nclosed,nopen))
         self.solver = SolverFactory(nel,nclosed,nopen,self.S,**kwargs)
         return
         
@@ -277,7 +279,7 @@ class UHFHamiltonian(AbstractHamiltonian):
     method='UHF'
     def __init__(self,molecule,**kwargs):
         self.molecule = molecule
-        logger.info("UHF calculation on system %s" % self.molecule.name)
+        logging.info("UHF calculation on system %s" % self.molecule.name)
         self.basis_set = BasisSet(molecule,**kwargs)
         self.integrals = Integrals(molecule,self.basis_set,**kwargs)
         self.iterator = SCFIterator()
@@ -293,7 +295,7 @@ class UHFHamiltonian(AbstractHamiltonian):
         self.bmat = None
         self.entropy = None
         nalpha,nbeta = molecule.get_alphabeta()
-        logger.info("Nalpha/beta = %d, %d" % (nalpha,nbeta))
+        logging.info("Nalpha/beta = %d, %d" % (nalpha,nbeta))
         self.solvera = SolverFactory(2*nalpha,nalpha,0,self.S,**kwargs)
         self.solverb = SolverFactory(2*nbeta,nbeta,0,self.S,**kwargs)
         return
@@ -336,7 +338,7 @@ class ROHFHamiltonian(AbstractHamiltonian):
     method='ROHF'
     def __init__(self,molecule,**kwargs):
         self.molecule = molecule
-        logger.info("ROHF calculation on system %s" % self.molecule.name)
+        logging.info("ROHF calculation on system %s" % self.molecule.name)
         self.basis_set = BasisSet(molecule,**kwargs)
         self.integrals = Integrals(molecule,self.basis_set,**kwargs)
         self.iterator = SCFIterator()
@@ -349,7 +351,7 @@ class ROHFHamiltonian(AbstractHamiltonian):
         self.norbs = len(self.basis_set)
 
         self.nalpha,self.nbeta = molecule.get_alphabeta()
-        logger.info("Nalpha/beta = %d, %d" % (self.nalpha,self.nbeta))
+        logging.info("Nalpha/beta = %d, %d" % (self.nalpha,self.nbeta))
         return
 
     def __repr__(self):
@@ -420,7 +422,7 @@ class MINDO3Hamiltonian(AbstractHamiltonian):
         from PyQuante.MINDO3 import initialize, get_nbf, get_reference_energy,\
              get_F0, get_nel,get_open_closed,get_enuke,get_guess_D
         self.molecule = molecule
-        logger.info("MINDO3 calculation on system %s" % self.molecule.name)
+        logging.info("MINDO3 calculation on system %s" % self.molecule.name)
         self.iterator = SCFIterator()
         self.charge = self.molecule.charge
         self.multiplicity = self.molecule.multiplicity
@@ -439,7 +441,7 @@ class MINDO3Hamiltonian(AbstractHamiltonian):
         self.F0 = get_F0(self.molecule)
         self.F = self.F0
         self.D = get_guess_D(self.molecule)
-        logger.info("Nel = %d Nclosed = %d Nopen = %d Enuke = %f Nbf = %d"
+        logging.info("Nel = %d Nclosed = %d Nopen = %d Enuke = %f Nbf = %d"
                      % (self.nel,self.nclosed,self.nopen,self.Enuke,self.nbf))
         return
 
@@ -488,7 +490,7 @@ class UMINDO3Hamiltonian(AbstractHamiltonian):
         from PyQuante.MINDO3 import initialize, get_nbf, get_reference_energy,\
              get_F0, get_nel,get_open_closed,get_enuke,get_guess_D
         self.molecule = molecule
-        logger.info("uMINDO3 calculation on system %s" % self.molecule.name)
+        logging.info("uMINDO3 calculation on system %s" % self.molecule.name)
         self.iterator = SCFIterator()
         self.charge = self.molecule.charge
         self.multiplicity = self.molecule.multiplicity
@@ -499,7 +501,7 @@ class UMINDO3Hamiltonian(AbstractHamiltonian):
         self.molecule = initialize(self.molecule)
         self.nel = get_nel(self.molecule,self.charge)
         self.nclosed,self.nopen = get_open_closed(self.nel,self.multiplicity)
-        logger.info("Nclosed/open = %d, %d" % (self.nclosed,self.nopen))
+        logging.info("Nclosed/open = %d, %d" % (self.nclosed,self.nopen))
         self.Enuke = get_enuke(self.molecule)
         self.energy = 0
         self.method = "MINDO3"

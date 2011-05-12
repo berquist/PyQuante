@@ -6,6 +6,7 @@ UnitSweet.py - Unit testing for Python.
 """
 
 import unittest,logging
+import PyQuante.Defaults
 from PyQuante.CI import CIS
 from PyQuante.Molecule import Molecule
 from PyQuante.MP import MP2
@@ -225,11 +226,10 @@ class UnitTests(unittest.TestCase):
                                             integrals=ints)
         self.assertAlmostEqual(E_exx,-7.981282,4)
 
-def runsuite(verbose=True):
+def runsuite():
     # To use psyco, uncomment this line:
     #import psyco; psyco.full()
-    if verbose: verbosity=2
-    else: verbosity=1
+    verbosity = PyQuante.Defaults.TestVerbosity
     # If you want more output, uncomment this line:
     #logging.basicConfig(format="%(message)s",level=logging.DEBUG)
     suite = unittest.TestLoader().loadTestsFromTestCase(UnitTests)
@@ -239,7 +239,7 @@ def runsuite(verbose=True):
     #unittest.main()
     return
 
-def debugsuite():
+def profilesuite():
     import cProfile,pstats
     cProfile.run('runsuite()','prof')
     prof = pstats.Stats('prof')
@@ -247,8 +247,8 @@ def debugsuite():
 
 if __name__ == '__main__':
     import sys
-    if "-d" in sys.argv:
-        debugsuite()
+    if "-d" in sys.argv or PyQuante.Defaults.TestProfile:
+        profilesuite()
     else:
         runsuite()
     

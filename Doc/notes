@@ -3882,11 +3882,7 @@ installation barf, plus a few more minor bugs along the way.
 * Created a new routine MG2 that contains the new molecular grids.
 
 -----2011-01-11-----
-Intended changes before the next PyQuante minor point release:
-* Create a Defaults.py module that keeps program-wide default
-  information; make sure that defaults can always be overrided by
-  kwargs, but also make sure that anytime kwargs gets a default
-  response, it's from Defaults and not something hardwired.
+Intended changes before the next PyQuante minor point release (1.6.5)
 * Redo the integral code:
   - Separate one_e ints from two_e ints
   - Two different flags (C vs Python, and which package) control ints
@@ -3900,7 +3896,7 @@ Intended changes before the next PyQuante minor point release:
   - C-code compile without error messages
 * Implement Jussi's ccbasis functions
 
-Changes before next major point release:
+Changes before next major point release (1.7.0)
 * GGA:
   - BLYP
   - Consistent testing with libxc
