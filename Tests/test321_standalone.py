@@ -1,9 +1,29 @@
 from PyQuante.TestMolecules import h2
-from PyQuante.PyQuante2 import SCF
+from PyQuante.LA2 import geigh,mkdens
+from PyQuante.Ints import get2JmK,getbasis,getints
+from PyQuante.Convergence import DIIS
+from PyQuante.hartree_fock import get_energy
 
-hf = SCF(h2,method="HF",basis="3-21g")
-print h2
-print hf.basis_set.bfs.bfs
-hf.iterate()
-print hf.iterator
-print hf.energy, "(benchmark = -1.122956)"
+bfs = getbasis(h2,basis="3-21g")
+nclosed,nopen = h2.get_closedopen()
+nocc = nclosed
+nel = h2.get_nel()
+S,h,Ints = getints(bfs,h2)
+
+orbe,orbs = geigh(h,S)
+
+enuke = h2.get_enuke()
+eold = 0
+
+for i in range(20):
+    D = mkdens(orbs,0,nocc)
+    G = get2JmK(Ints,D)
+    F = h+G
+    orbe,orbs = geigh(F,S)
+    energy = get_energy(h,F,D,enuke)
+    print i,energy,energy-eold
+    if abs(energy-eold)<1e-5:
+        break
+    eold = energy
+print "Converged"
+print energy, "(benchmark = -1.122956)"
