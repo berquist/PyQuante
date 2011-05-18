@@ -15,10 +15,13 @@ orbe,orbs = geigh(h,S)
 enuke = h2.get_enuke()
 eold = 0
 
+avg = DIIS(S)
+
 for i in range(20):
     D = mkdens(orbs,0,nocc)
     G = get2JmK(Ints,D)
     F = h+G
+    F = avg.getF(F,D)
     orbe,orbs = geigh(F,S)
     energy = get_energy(h,F,D,enuke)
     print i,energy,energy-eold
