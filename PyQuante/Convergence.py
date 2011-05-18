@@ -12,7 +12,7 @@
 
 from PyQuante.NumWrap import dot,ravel,matrixmultiply,zeros
 from PyQuante.NumWrap import solve
-from PyQuante.LA2 import SymOrth
+from PyQuante.LA2 import SymOrth,stable_solve
 from math import sqrt
 
 VERBOSE=0
@@ -122,14 +122,7 @@ class DIIS:
         a[nit,nit] = 0
         b[nit] = -1.0
 
-        # The try loop makes this a bit more stable.
-        #  Thanks to John Kendrick!
-        try:
-            c = solve(a,b)
-        except:
-            print "Solve failed in DIIS"
-            self.Fold = F
-            return F
+        c = stable_solve(a,b)
         
         F = zeros((n,m),'d')
         for i in xrange(nit):

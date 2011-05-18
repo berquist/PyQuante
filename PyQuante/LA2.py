@@ -16,7 +16,7 @@
 import Defaults
 import logging
 from math import sqrt
-from NumWrap import matrixmultiply,identity,zeros,eigh,cholesky,inv,dot
+from NumWrap import matrixmultiply,identity,zeros,eigh,cholesky,inv,dot,pinv
 
 # Note: to be really smart in a quantum chemistry program, we would
 #  want to only symmetrically orthogonalize the S matrix once, since
@@ -158,4 +158,6 @@ def diagonal_mat(vector):
 
     return matrix    
     
-
+def stable_solve(A,b):
+    Ainv = pinv(A)
+    return dot(Ainv,b)
