@@ -27,10 +27,29 @@ basis_map = {
     'sto-3g':'sto3g',
     'sto-6g':'sto6g',
     'lacvp':'lacvp',
+    
     'ccpvdz':'ccpvdz',
     'cc-pvdz':'ccpvdz',
     'ccpvtz':'ccpvtz',
     'cc-pvtz':'ccpvtz',
+    'ccpvqz':'ccpvqz',
+    'cc-pvqz':'ccpvqz',
+    'ccpv5z':'ccpv5z',
+    'cc-pv5z':'ccpv5z',
+    'ccpv6z':'ccpv6z',
+    'cc-pv6z':'ccpv6z',
+
+    'augccpvdz':'augccpvdz',
+    'aug-cc-pvdz':'augccpvdz',
+    'augccpvtz':'augccpvtz',
+    'aug-cc-pvtz':'augccpvtz',
+    'augccpvqz':'augccpvqz',
+    'aug-cc-pvqz':'augccpvqz',
+    'augccpv5z':'augccpv5z',
+    'aug-cc-pv5z':'augccpv5z',
+    'augccpv6z':'augccpv6z',
+    'aug-cc-pv6z':'augccpv6z',
+    
     'dzvp':'dzvp',
     }
 
