@@ -1,10 +1,13 @@
-# Test the two electron integral methods
+# Test the two electron integral methods to insure that they all
+# produce the same results for a variety of cases
 from itertools import combinations_with_replacement
 from PyQuante import pyints,hgp,rys,cints,chgp,crys
 from PyQuante.PGBF import PGBF
 
 def approx(a,b,delta=1e-7): return abs(a-b)<delta
 
+# Basis functions over which to test. The random-ish numbers here just insure
+# that I'm not limiting myself to certain symmetry constraints.
 s1 = PGBF(1.0,(0,0,0),(0,0,0))
 s2 = PGBF(2.0,(.1,.2,.3),(0,0,0))
 s3 = PGBF(3.0,(.1,.2,.3),(0,0,0))
@@ -20,10 +23,13 @@ xz = PGBF(1.4,(3.1,5.2,.3),(1,0,1))
 syms = ['s1','s2','s3','px','py','pz','xx','yy','zz','xy','yz','xz']
 bfs = [s1,s2,s3,px,py,pz,xx,yy,zz,xy,yz,xz]
 nbf = len(bfs)
+
+int_libs = [pyints,hgp,rys,cints,chgp,crys]
+
 for i,j,k,l in combinations_with_replacement(xrange(nbf),4):
     a,b,c,d = bfs[i],bfs[j],bfs[k],bfs[l]
     data = []
-    for lib in [pyints,hgp,rys,cints,chgp,crys]:
+    for lib in int_libs:
         datum = lib.coulomb_repulsion(a.origin,a.norm,a.powers,a.exp,
                                    b.origin,b.norm,b.powers,b.exp,
                                    c.origin,c.norm,c.powers,c.exp,

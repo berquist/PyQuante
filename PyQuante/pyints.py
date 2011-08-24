@@ -355,6 +355,10 @@ def coulomb_repulsion((xa,ya,za),norma,(la,ma,na),alphaa,
 
 def B_term(i1,i2,r1,r2,u,l1,l2,l3,l4,Px,Ax,Bx,Qx,Cx,Dx,gamma1,gamma2,delta):
     "THO eq. 2.22"
+    # Jussi pointed out that in the paper, the exponents of delta are
+    #  i1+i2-r1-r2-u, rather than what I have, i1+i2-2(r1+r2)-u.
+    #  However, when I changed this term, the integrals no longer give the
+    #  correct values. Something to think about at some point, or maybe not.
     return fB(i1,l1,l2,Px,Ax,Bx,r1,gamma1) \
            *pow(-1,i2)*fB(i2,l3,l4,Qx,Cx,Dx,r2,gamma2) \
            *pow(-1,u)*fact_ratio2(i1+i2-2*(r1+r2),u) \
