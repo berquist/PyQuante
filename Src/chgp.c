@@ -37,12 +37,13 @@ double lgamma(double x);
 #define FPMIN 1.0e-30
 #define SMALL 0.00000001
 
-/* MAXAM is one more than the maximum value of an AM (l,m,n) */
-#define MAXAM 5
-#define MAXMTOT 12
+#define MAXMTOT 100
+double Fgterms[MAXMTOT];
 
-double vrr_terms[MAXAM*MAXAM*MAXAM*MAXAM*MAXAM*MAXAM*MAXMTOT];
-double Fgterms[100];
+/* MAXAM is one more than the maximum value of an AM (l,m,n) */
+#define MAXAM 7
+#define MAXTERMS MAXAM*MAXAM*MAXAM*MAXAM*MAXAM*MAXAM*MAXMTOT
+double vrr_terms[MAXTERMS];
 
 // lgamma not included in ANSI standard and so not available in MSVC
 #if defined(_MSC_VER)
@@ -250,9 +251,15 @@ static double vrr(double xa, double ya, double za, double norma,
 	   int m){
 
   double px,py,pz,qx,qy,qz,zeta,eta,wx,wy,wz,rab2,rcd2,Kcd,rpq2,T,Kab,val;
-  /* double *vrr_terms; */
+  //double *vrr_terms;
 
   int i,j,k,q,r,s,im,mtot;
+
+  if ((la > MAXAM) || (ma > MAXAM) || (na > MAXAM) || (lc > MAXAM) ||
+      (mc > MAXAM) || (nc > MAXAM)) {
+    printf("vrr: MAXAM set to %d\n",MAXAM);
+    printf("     current a.m. values are (%d,%d,%d),(%d,%d,%d)\n",la,ma,na,lc,mc,nc);
+  }
 
   px = product_center_1D(alphaa,xa,alphab,xb);
   py = product_center_1D(alphaa,ya,alphab,yb);
@@ -286,7 +293,9 @@ static double vrr(double xa, double ya, double za, double norma,
     exit(1);
   }
 
+  if (mtot > MAXMTOT) printf("Error: MAXMTOT=%d, needs to be > %d\n",MAXMTOT,mtot);
   Fgterms[mtot] = Fgamma(mtot,T);
+
   for (im=mtot-1; im>=0; im--)
     Fgterms[im]=(2.*T*Fgterms[im+1]+exp(-T))/(2.*im+1);
 
@@ -417,7 +426,6 @@ static double vrr(double xa, double ya, double za, double norma,
   return val;
 
 }
-
 
 /* These iindexing functions are wasteful: they simply allocate an array
    of dimension MAXAM^6*mtot. Once this is working I'll look to 
