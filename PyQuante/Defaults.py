@@ -6,7 +6,7 @@ import logging
 # Logging/verbosity
 LoggingFilename = 'pyquante.log'
 LoggingLevel = logging.INFO
-TestVerbosity = 1 # 0 = None, 1=Some, 2=Lots
+TestVerbosity = 2 # 0 = None, 1=Some, 2=Lots
 TestProfile = False
 
 # SCF flags
@@ -63,7 +63,7 @@ NumericForceSym = True
 SubspaceVirtualOrbs = 1
 DavidsonEvecTolerance = 1e-6
 DavidsonNormTolerance = 1e-10
-JacobiSweeps = 100
+JacobiSweeps = 200
 JacobiTolerance = 1e-10
 ExpSteps = 12
 ExpCutoff = 1e-8

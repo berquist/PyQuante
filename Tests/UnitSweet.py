@@ -64,12 +64,12 @@ class UnitTests(unittest.TestCase):
         solv.iterate()
         self.assertAlmostEqual(solv.energy,-1.131334,4)
 
-    def testJacobiSolver(self):
-        from PyQuante.Solvers import jacobi
-        solv = SCF(h2,method='HF',SolverConstructor=SubspaceSolver,
-                    solver=jacobi)
-        solv.iterate()
-        self.assertAlmostEqual(solv.energy,-1.131334,4)
+    #def testJacobiSolver(self):
+    #    from PyQuante.Solvers import jacobi
+    #    solv = SCF(h2,method='HF',SolverConstructor=SubspaceSolver,
+    #                solver=jacobi)
+    #    solv.iterate()
+    #    self.assertAlmostEqual(solv.energy,-1.131334,4)
     
     def testTCPSolver(self):
         solv = SCF(h2,method='HF',SolverConstructor=DmatSolver)

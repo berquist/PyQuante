@@ -1,5 +1,5 @@
 from PyQuante import hgp,chgp
-from itertools import combinations_with_replacement,product
+from itertools import product
 
 def approx(a,b,delta=1e-7): return abs(a-b)<delta
 

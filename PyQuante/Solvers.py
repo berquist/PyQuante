@@ -80,7 +80,7 @@ def jacobi(A,**kwargs):
     Options:
     Name        Default  Definition
     tol         1e-10    The tolerance for an element to be declared zero
-    max_sweeps  100      Maximum number of sweeps through the matrix
+    max_sweeps  200      Maximum number of sweeps through the matrix
     """
     max_sweeps = kwargs.get('max_sweeps',Defaults.JacobiSweeps)
     tol = kwargs.get('tol',Defaults.JacobiTolerance)

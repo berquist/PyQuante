@@ -622,7 +622,8 @@ class SubspaceSolver(AbstractSolver):
 
         # Determine nroots, which Davidson (and perhaps others) needs:
         self.pass_nroots = kwargs.get("pass_nroots")
-        self.nvirt = kwargs.get("nvirt",Defaults.SubspaceVirtualOrbs) # solve for 1 virtual orbital by default
+        # solve for 1 virtual orbital by default:
+        self.nvirt = kwargs.get("nvirt",Defaults.SubspaceVirtualOrbs) 
         self.nroots = self.nclosed + self.nopen + self.nvirt
 
         if not self.solver:
