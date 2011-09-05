@@ -12,7 +12,7 @@
  license. Please see the file LICENSE that is part of this
  distribution. 
 """
-import Defaults
+import settings
 from PyQuante.Atom import Atom
 from PyQuante.Element import sym2no
 from PyQuante.Constants import bohr2ang,ang2bohr
@@ -46,13 +46,13 @@ class Molecule:
         self.atoms = []
         self.basis = []
         self.grid = None
-        units = kwargs.get('units',Defaults.LengthUnits)
+        units = kwargs.get('units',settings.LengthUnits)
         units = units.lower()[:4]
         assert units in allowed_units
         self.units = units
         if atomlist: self.add_atuples(atomlist)
-        self.charge = int(kwargs.get('charge',Defaults.MolecularCharge))
-        self.multiplicity = int(kwargs.get('multiplicity',Defaults.SpinMultiplicity))
+        self.charge = int(kwargs.get('charge',settings.MolecularCharge))
+        self.multiplicity = int(kwargs.get('multiplicity',settings.SpinMultiplicity))
         return
     # Alternative constructors
     # @classmethod <- python2.4

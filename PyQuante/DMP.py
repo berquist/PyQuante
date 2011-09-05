@@ -19,7 +19,7 @@
 #     normally kicks in around 70 or 80 iterations.
 #  MCW works, provided we have a guess for efermi
 
-import Defaults
+import settings
 
 import logging
 from math import sqrt
@@ -34,8 +34,8 @@ class AbstractDMP:
     "AbstractDMP - Functions common to all density matrix purifiers"
     method = "Abstract"
     def __init__(self,F,Ne,S=None,**kwargs):
-        self.tol = kwargs.get('tol',Defaults.DMPTolerance)
-        self.maxit = kwargs.get('maxit',Defaults.DMPIterations)
+        self.tol = kwargs.get('tol',settings.DMPTolerance)
+        self.maxit = kwargs.get('maxit',settings.DMPIterations)
         self.do_orth = S is not None
 
         self.N = F.shape[0]
@@ -92,8 +92,8 @@ class NOTCP:
     "Nonorthogonal version of Niklasson Trace Correcting Purification"
     method = "NOTCP"
     def __init__(self,F,Ne,S,**kwargs):
-        self.tol = kwargs.get('tol',Defaults.DMPTolerance)
-        self.maxit = kwargs.get('maxit',Defaults.DMPIterations)
+        self.tol = kwargs.get('tol',settings.DMPTolerance)
+        self.maxit = kwargs.get('maxit',settings.DMPIterations)
         self.S = S
         self.N = F.shape[0]
         self.I = identity(self.N,'d')
@@ -297,7 +297,7 @@ def tridiagmat(alpha,beta):
 def lanczos_minmax(F,S=None,**kwargs):
     "Estimate the min/max evals of F using a few iters of Lanczos"
     doS = S is not None
-    niter = kwargs.get('niter',Defaults.DMPLanczosMinmaxIters)
+    niter = kwargs.get('niter',settings.DMPLanczosMinmaxIters)
     N = F.shape[0]
     niter = min(N,niter)
     x = zeros(N,'d')

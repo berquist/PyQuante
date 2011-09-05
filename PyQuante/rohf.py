@@ -17,7 +17,7 @@
  license. Please see the file LICENSE that is part of this
  distribution. 
 """
-import Defaults
+import settings
 from PyQuante.Ints import getbasis,getints,getJ,getK,get2JmK
 from PyQuante.LA2 import mkdens,geigh,trace2,simx
 from PyQuante.NumWrap import zeros,transpose,matrixmultiply,eigh,dot
@@ -124,8 +124,8 @@ def expmats(A):
     return expm(A)
 
 def expmat(A,**kwargs):
-    nmax = kwargs.get('nmax',Defaults.ExpSteps)
-    cut = kwargs.get('cut',Defaults.ExpCutoff)
+    nmax = kwargs.get('nmax',settings.ExpSteps)
+    cut = kwargs.get('cut',settings.ExpCutoff)
     E = identity(A.shape[0],'d')
     D = E
     for i in xrange(1,nmax):
@@ -214,9 +214,9 @@ def rohf_wag(atoms,noccsh=None,f=None,a=None,b=None,**kwargs):
 
     atoms      A Molecule object containing the system of interest
     """
-    ConvCriteria = kwargs.get('ConvCriteria',Defaults.ConvergenceCriteria)
-    MaxIter = kwargs.get('MaxIter',Defaults.MaxIter)
-    DoAveraging = kwargs.get('DoAveraging',Defaults.Averaging)
+    ConvCriteria = kwargs.get('ConvCriteria',settings.ConvergenceCriteria)
+    MaxIter = kwargs.get('MaxIter',settings.MaxIter)
+    DoAveraging = kwargs.get('DoAveraging',settings.Averaging)
     verbose = kwargs.get('verbose')
 
     bfs = getbasis(atoms,**kwargs)
@@ -274,10 +274,10 @@ def rohf(atoms,**kwargs):
     atoms       A Molecule object containing the molecule
     """
 
-    ConvCriteria = kwargs.get('ConvCriteria',Defaults.ConvergenceCriteria)
-    MaxIter = kwargs.get('MaxIter',Defaults.MaxIter)
-    DoAveraging = kwargs.get('DoAveraging',Defaults.Averaging)
-    averaging = kwargs.get('averaging',Defaults.MixingFraction)
+    ConvCriteria = kwargs.get('ConvCriteria',settings.ConvergenceCriteria)
+    MaxIter = kwargs.get('MaxIter',settings.MaxIter)
+    DoAveraging = kwargs.get('DoAveraging',settings.Averaging)
+    averaging = kwargs.get('averaging',settings.MixingFraction)
     verbose = kwargs.get('verbose')
 
     bfs = getbasis(atoms,**kwargs)

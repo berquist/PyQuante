@@ -20,7 +20,7 @@ REPORT BUGS
 COPYRIGHT
 
 """
-import Defaults
+import settings
 from leapfrog import leapfrog
 from hartree_fock import rhf,uhf,uhf_fixed_occ
 from Wavefunction import Wavefunction
@@ -63,15 +63,15 @@ def rhf_dyn(atoms,**kwargs):
     orbs          None    If not none, the guess orbitals
     """
     #dynamics options
-    job = kwargs.get('job',Defaults.DynJob)
-    nsteps = kwargs.get('nsteps',Defaults.DynSteps)
-    dt = kwargs.get('dt',Defaults.DynTStep)
+    job = kwargs.get('job',settings.DynJob)
+    nsteps = kwargs.get('nsteps',settings.DynSteps)
+    dt = kwargs.get('dt',settings.DynTStep)
     
     #save any given RHF options
-    cc = kwargs.get('ConvCriteria',Defaults.ConvergenceCriteria)
-    maxit = kwargs.get('MaxIter',Defaults.MaxIters)
-    doavg = kwargs.get('DoAveraging',Defaults.Averaging)
-    temp = kwargs.get('ETemp',Defaults.ElectronTemperature)
+    cc = kwargs.get('ConvCriteria',settings.ConvergenceCriteria)
+    maxit = kwargs.get('MaxIter',settings.MaxIters)
+    doavg = kwargs.get('DoAveraging',settings.Averaging)
+    temp = kwargs.get('ETemp',settings.ElectronTemperature)
     bfcns = kwargs.get('bfs')
     if not bfcns:
         bdat = kwargs.get('basis_data')
@@ -141,15 +141,15 @@ def uhf_dyn(atoms,**kwargs):
     orbs          None    If not None, the guess orbitals
     """
     #dynamics options
-    job = kwargs.get('job',Defaults.DynJob)
-    nsteps = kwargs.get('nsteps',Defaults.DynSteps)
-    dt = kwargs.get('dt',Defaults.DynTStep)
+    job = kwargs.get('job',settings.DynJob)
+    nsteps = kwargs.get('nsteps',settings.DynSteps)
+    dt = kwargs.get('dt',settings.DynTStep)
     
     #save any given UHF options
-    cc = kwargs.get('ConvCriteria',Defaults.ConvergenceCriteria)
-    maxit = kwargs.get('MaxIter',Defaults.MaxIter)
-    doavg = kwargs.get('DoAveraging',Defaults.Averaging)
-    temp = kwargs.get('ETemp',Defaults.ElectronTemperature)
+    cc = kwargs.get('ConvCriteria',settings.ConvergenceCriteria)
+    maxit = kwargs.get('MaxIter',settings.MaxIter)
+    doavg = kwargs.get('DoAveraging',settings.Averaging)
+    temp = kwargs.get('ETemp',settings.ElectronTemperature)
     bfcns = kwargs.get('bfs')
     if not bfcns:
         bdat = kwargs.get('basis_data')
@@ -227,15 +227,15 @@ def fixedocc_uhf_dyn(atoms,occa,occb,**kwargs):
     orbs          None    If not None, the guess orbitals
     """
     #dynamics options
-    job = kwargs.get('job',Defaults.DynJob)
-    nsteps = kwargs.get('nsteps',Defaults.DynSteps)
-    dt = kwargs.get('dt',Defaults.DynTSteps)
+    job = kwargs.get('job',settings.DynJob)
+    nsteps = kwargs.get('nsteps',settings.DynSteps)
+    dt = kwargs.get('dt',settings.DynTSteps)
     
     #save any given UHF options
-    cc = kwargs.get('ConvCriteria',Defaults.ConvergenceCriteria)
-    maxit = kwargs.get('MaxIter',Defaults.MaxIter)
-    doavg = kwargs.get('DoAveraging',Defaults.Averaging)
-    temp = kwargs.get('ETemp',Defaults.ElectronTemperature)
+    cc = kwargs.get('ConvCriteria',settings.ConvergenceCriteria)
+    maxit = kwargs.get('MaxIter',settings.MaxIter)
+    doavg = kwargs.get('DoAveraging',settings.Averaging)
+    temp = kwargs.get('ETemp',settings.ElectronTemperature)
     bfcns = kwargs.get('bfs')
     if not bfcns:
         bdat = kwargs.get('basis_data')

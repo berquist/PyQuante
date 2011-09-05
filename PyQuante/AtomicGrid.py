@@ -15,7 +15,7 @@
  license. Please see the file LICENSE that is part of this
  distribution. 
 """
-import Defaults
+import settings
 from GridPoint import GridPoint
 from Lebedev import Lebedev
 from Legendre import Legendre
@@ -59,10 +59,10 @@ class AtomicGrid:
         # Currently I'm keeping the grid in an array of points,
         # and in an array of shells of points. The goal is to move
         # to only having the array of shells 
-        self.do_grad_dens = kwargs.get('do_grad_dens',Defaults.DFTDensityGradient)
-        radial = kwargs.get('radial',Defaults.DFTRadialGridType)
-        nrad = kwargs.get('nrad',Defaults.DFTGridRadii)
-        fineness = kwargs.get('fineness',Defaults.DFTGridFineness)
+        self.do_grad_dens = kwargs.get('do_grad_dens',settings.DFTDensityGradient)
+        radial = kwargs.get('radial',settings.DFTRadialGridType)
+        nrad = kwargs.get('nrad',settings.DFTGridRadii)
+        fineness = kwargs.get('fineness',settings.DFTGridFineness)
         self.points = []
         self.shells = []
         self.Z = atom.atno
@@ -164,8 +164,8 @@ class AtomicGrid:
 # The wi's are adjusted to only have to be multiplied by wrad from
 # the lebedev shell
 def EulerMaclaurinGrid(nrad,Z,**kwargs):
-    do_sg1 = kwargs.get('do_sg1',Defaults.DFTGridSG1)
-    nang = kwargs.get('nang',Defaults.DFTGridAngularPoints)
+    do_sg1 = kwargs.get('do_sg1',settings.DFTGridSG1)
+    nang = kwargs.get('nang',settings.DFTGridAngularPoints)
     radial = EulerMaclaurinRadialGrid(nrad,Z)
     if do_sg1:
         grid = [(r,w,SG1Angs(r,Z)) for r,w in radial]

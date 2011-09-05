@@ -38,11 +38,11 @@ etemp         False   Use etemp value for finite temperature DFT (default)
 The test suite at the bottom of the file has examples of usage.
 """
 
-import Defaults
+import settings
 import unittest,logging
 
-logging.basicConfig(level=Defaults.LoggingLevel,
-                    filename=Defaults.LoggingFilename)
+logging.basicConfig(level=settings.LoggingLevel,
+                    filename=settings.LoggingFilename)
 class SCFIterator:
     def __init__(self,**kwargs):
         self.energy_history = [0]
@@ -50,7 +50,7 @@ class SCFIterator:
         return
 
     def iterate(self,ham,**kwargs):
-        self.max_iter = kwargs.get('max_iter',Defaults.MaxIter)
+        self.max_iter = kwargs.get('max_iter',settings.MaxIter)
         for self.iter in xrange(1,self.max_iter+1):
             ham.update(**kwargs)
             logging.debug("%d %f" % (self.iter,ham.energy))
@@ -67,7 +67,7 @@ class SCFIterator:
 
     def is_converged(self,ham,**kwargs):
         self.energy = ham.get_energy()
-        etol = kwargs.get('etol',Defaults.ConvergenceCriteria)
+        etol = kwargs.get('etol',settings.ConvergenceCriteria)
         if not self.energy_history:
             self.energy_history.append(self.energy)
             return False
@@ -117,7 +117,7 @@ class BasisSet:
 ########## Hamiltonian ##########
 
 def HamiltonianFactory(molecule,**kwargs):
-    method = kwargs.get('method',Defaults.HamiltonianMethod)
+    method = kwargs.get('method',settings.HamiltonianMethod)
     if method == "UHF":
         return UHFHamiltonian(molecule,**kwargs)
     elif method == 'ROHF':
@@ -158,7 +158,7 @@ class HFHamiltonian(AbstractHamiltonian):
         self.F = self.h
         self.dmat = None
         self.entropy = None
-        self.DoAveraging = kwargs.get('DoAveraging',Defaults.Averaging)
+        self.DoAveraging = kwargs.get('DoAveraging',settings.Averaging)
         if self.DoAveraging:
             self.Averager = DIIS(self.S)
         nel = molecule.get_nel()
@@ -215,12 +215,12 @@ class DFTHamiltonian(AbstractHamiltonian):
         self.Enuke = molecule.get_enuke()
         self.nel = molecule.get_nel()
         self.F = self.h
-        self.functional = kwargs.get('functional',Defaults.DFTFunctional)
+        self.functional = kwargs.get('functional',settings.DFTFunctional)
         kwargs['do_grad_dens'] = need_gradients[self.functional]
         self.setup_grid(molecule,self.basis_set.get(),**kwargs)
         self.dmat = None
         self.entropy = None
-        self.DoAveraging = kwargs.get('DoAveraging',Defaults.DFTAveraging)
+        self.DoAveraging = kwargs.get('DoAveraging',settings.DFTAveraging)
         if self.DoAveraging:
             self.Averager = DIIS(self.S)
         nel = molecule.get_nel()
@@ -242,8 +242,8 @@ class DFTHamiltonian(AbstractHamiltonian):
     def setup_grid(self,molecule,bfs,**kwargs):
         #from PyQuante.MolecularGrid import MolecularGrid
         from PyQuante.MG2 import MG2 as MolecularGrid
-        grid_nrad = kwargs.get('grid_nrad',Defaults.DFTGridRadii)
-        grid_fineness = kwargs.get('grid_fineness',Defaults.DFTGridFineness)
+        grid_nrad = kwargs.get('grid_nrad',settings.DFTGridRadii)
+        grid_fineness = kwargs.get('grid_fineness',settings.DFTGridFineness)
         self.gr = MolecularGrid(molecule,grid_nrad,grid_fineness,**kwargs) 
         self.gr.set_bf_amps(bfs)
         return
@@ -569,7 +569,7 @@ def SolverFactory(nel,nclosed,nopen,S,**kwargs):
     if kwargs.get("SolverConstructor"):
         # We can override all of this and pass in an explicit solver constructor:
         return kwargs["SolverConstructor"](nel,nclosed,nopen,S,**kwargs)
-    if kwargs.get('etemp',Defaults.ElectronTemperature):
+    if kwargs.get('etemp',settings.ElectronTemperature):
         return FermiDiracSolver(nel,nclosed,nopen,S,**kwargs)
     return BasicSolver(nel,nclosed,nopen,S,**kwargs)
 
@@ -600,7 +600,7 @@ class FermiDiracSolver(AbstractSolver):
         self.nel = nel
         self.nclosed = nclosed
         self.nopen = nopen
-        self.etemp = kwargs.get('etemp',Defaults.ElectronTemperature)
+        self.etemp = kwargs.get('etemp',settings.ElectronTemperature)
         return
 
     def solve(self,H,**kwargs):
@@ -622,8 +622,7 @@ class SubspaceSolver(AbstractSolver):
 
         # Determine nroots, which Davidson (and perhaps others) needs:
         self.pass_nroots = kwargs.get("pass_nroots")
-        # solve for 1 virtual orbital by default:
-        self.nvirt = kwargs.get("nvirt",Defaults.SubspaceVirtualOrbs) 
+        self.nvirt = kwargs.get("nvirt",settings.SubspaceVirtualOrbs) # solve for 1 virtual orbital by default
         self.nroots = self.nclosed + self.nopen + self.nvirt
 
         if not self.solver:

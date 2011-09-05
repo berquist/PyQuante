@@ -9,7 +9,7 @@
  license. Please see the file LICENSE that is part of this
  distribution. 
 """
-import Defaults
+import settings
 #from math import *
 from Ints import getbasis,getJ,getints
 #from MolecularGrid import MolecularGrid
@@ -29,10 +29,10 @@ from LA2 import SymOrth
 def getXC(gr,nel,**kwargs):
     "Form the exchange-correlation matrix"
 
-    functional = kwargs.get('functional',Defaults.DFTFunctional)
+    functional = kwargs.get('functional',settings.DFTFunctional)
     do_grad_dens = need_gradients[functional]
     do_spin_polarized = kwargs.get('do_spin_polarized',
-                                   Defaults.DFTSpinPolarized)
+                                   settings.DFTSpinPolarized)
     
     gr.floor_density()  # Insure that the values of the density don't underflow
     gr.renormalize(nel) # Renormalize to the proper # electrons
@@ -146,11 +146,11 @@ def dft(atoms,**kwargs):
                           Only A works now. Stay tuned.
     """
     verbose = kwargs.get('verbose') 
-    ConvCriteria = kwargs.get('ConvCriteria',Defaults.DFTConvergenceCriteria)
-    MaxIter = kwargs.get('MaxIter',Defaults.MaxIter)
-    DoAveraging = kwargs.get('DoAveraging',Defaults.DFTAveraging)
-    ETemp = kwargs.get('ETemp',Defaults.DFTElectronTemperature)
-    functional = kwargs.get('functional',Defaults.DFTFunctional)
+    ConvCriteria = kwargs.get('ConvCriteria',settings.DFTConvergenceCriteria)
+    MaxIter = kwargs.get('MaxIter',settings.MaxIter)
+    DoAveraging = kwargs.get('DoAveraging',settings.DFTAveraging)
+    ETemp = kwargs.get('ETemp',settings.DFTElectronTemperature)
+    functional = kwargs.get('functional',settings.DFTFunctional)
     kwargs['do_grad_dens'] = need_gradients[functional]
 
     bfs = getbasis(atoms,**kwargs)
@@ -160,8 +160,8 @@ def dft(atoms,**kwargs):
     enuke = atoms.get_enuke()
 
     # default medium mesh
-    grid_nrad = kwargs.get('grid_nrad',Defaults.DFTGridRadii)
-    grid_fineness = kwargs.get('grid_fineness',Defaults.DFTGridFineness)
+    grid_nrad = kwargs.get('grid_nrad',settings.DFTGridRadii)
+    grid_fineness = kwargs.get('grid_fineness',settings.DFTGridFineness)
 
     gr = MolecularGrid(atoms,grid_nrad,grid_fineness,**kwargs) 
     gr.set_bf_amps(bfs)
@@ -248,11 +248,11 @@ def udft(atoms,**kwargs):
     grid_fineness 1       Radial shell fineness. 0->coarse, 1->medium, 2->fine
     """
     verbose = kwargs.get('verbose')
-    ConvCriteria = kwargs.get('ConvCriteria',Defaults.DFTConvergenceCriteria)
-    MaxIter = kwargs.get('MaxIter',Defaults.MaxIter)
-    DoAveraging = kwargs.get('DoAveraging',Defaults.DFTAveraging)
-    ETemp = kwargs.get('ETemp',Defaults.DFT.ElectronTemperature)
-    functional = kwargs.get('functional',Defaults.DFTFunctional)
+    ConvCriteria = kwargs.get('ConvCriteria',settings.DFTConvergenceCriteria)
+    MaxIter = kwargs.get('MaxIter',settings.MaxIter)
+    DoAveraging = kwargs.get('DoAveraging',settings.DFTAveraging)
+    ETemp = kwargs.get('ETemp',settings.DFT.ElectronTemperature)
+    functional = kwargs.get('functional',settings.DFTFunctional)
     kwargs['do_grad_dens'] = need_gradients[functional]
     kwargs['do_spin_polarized'] = True
 
@@ -262,8 +262,8 @@ def udft(atoms,**kwargs):
     enuke = atoms.get_enuke()
 
     # default medium mesh
-    grid_nrad = kwargs.get('grid_nrad',Defaults.DFTGridRadii)
-    grid_fineness = kwargs.get('grid_fineness',Defaults.DFTGridFineness)
+    grid_nrad = kwargs.get('grid_nrad',settings.DFTGridRadii)
+    grid_fineness = kwargs.get('grid_fineness',settings.DFTGridFineness)
 
     gr = MolecularGrid(atoms,grid_nrad,grid_fineness,**kwargs) 
     gr.set_bf_amps(bfs)
@@ -362,11 +362,11 @@ def dft_fixed_occ(atoms,occs,**kwargs):
                           Only A works now. Stay tuned.
     """
     verbose = kwargs.get('verbose') 
-    ConvCriteria = kwargs.get('ConvCriteria',Defaults.DFTConvergenceCriteria)
-    MaxIter = kwargs.get('MaxIter',Defaults.MaxIter)
-    DoAveraging = kwargs.get('DoAveraging',Defaults.DFTAveraging)
-    ETemp = kwargs.get('ETemp',Defaults.DFTElectronTemperature)
-    functional = kwargs.get('functional',Defaults.DFTFunctional)
+    ConvCriteria = kwargs.get('ConvCriteria',settings.DFTConvergenceCriteria)
+    MaxIter = kwargs.get('MaxIter',settings.MaxIter)
+    DoAveraging = kwargs.get('DoAveraging',settings.DFTAveraging)
+    ETemp = kwargs.get('ETemp',settings.DFTElectronTemperature)
+    functional = kwargs.get('functional',settings.DFTFunctional)
     kwargs['do_grad_dens'] = need_gradients[functional]
 
     bfs = getbasis(atoms,**kwargs)
@@ -376,8 +376,8 @@ def dft_fixed_occ(atoms,occs,**kwargs):
     enuke = atoms.get_enuke()
 
     # default medium mesh
-    grid_nrad = kwargs.get('grid_nrad',Defaults.DFTGridRadii)
-    grid_fineness = kwargs.get('grid_fineness',Defaults.DFTGridFineness)
+    grid_nrad = kwargs.get('grid_nrad',settings.DFTGridRadii)
+    grid_fineness = kwargs.get('grid_fineness',settings.DFTGridFineness)
 
     gr = MolecularGrid(atoms,grid_nrad,grid_fineness,**kwargs) 
     gr.set_bf_amps(bfs)
@@ -479,12 +479,12 @@ def udft_fixed_occ(atoms,occa, occb, **kwargs):
     grid_fineness 1       Radial shell fineness. 0->coarse, 1->medium, 2->fine
     """
     verbose = kwargs.get('verbose')
-    ConvCriteria = kwargs.get('ConvCriteria',Defaults.DFTConvergenceCriteria)
-    MaxIter = kwargs.get('MaxIter',Defaults.MaxIter)
-    DoAveraging = kwargs.get('DoAveraging',Defaults.DFTAveraging)
-    averaging = kwargs.get('averaging',Defaults.MixingFraction)
-    ETemp = kwargs.get('ETemp',Defaults.DFTElectronTemperature)
-    functional = kwargs.get('functional',Defaults.DFTFunctional)
+    ConvCriteria = kwargs.get('ConvCriteria',settings.DFTConvergenceCriteria)
+    MaxIter = kwargs.get('MaxIter',settings.MaxIter)
+    DoAveraging = kwargs.get('DoAveraging',settings.DFTAveraging)
+    averaging = kwargs.get('averaging',settings.MixingFraction)
+    ETemp = kwargs.get('ETemp',settings.DFTElectronTemperature)
+    functional = kwargs.get('functional',settings.DFTFunctional)
     #default to LDA which has no correlation since that is easier
 
     kwargs['do_grad_dens'] = need_gradients[functional]
@@ -497,8 +497,8 @@ def udft_fixed_occ(atoms,occa, occb, **kwargs):
     enuke = atoms.get_enuke()
 
     # default medium mesh
-    grid_nrad = kwargs.get('grid_nrad',Defaults.DFTGridRadii)
-    grid_fineness = kwargs.get('grid_fineness',Defaults.DFTGridFineness)
+    grid_nrad = kwargs.get('grid_nrad',settings.DFTGridRadii)
+    grid_fineness = kwargs.get('grid_fineness',settings.DFTGridFineness)
 
     gr = MolecularGrid(atoms,grid_nrad,grid_fineness,**kwargs) 
     gr.set_bf_amps(bfs)

@@ -17,7 +17,7 @@
  distribution. 
 """
 from math import sqrt
-import Defaults
+import settings
 from AtomicGrid import AtomicGrid, Bragg
 from NumWrap import array,reshape,zeros,dot
 from PyQuante.cints import dist2
@@ -26,7 +26,7 @@ class MolecularGrid:
     "Class to hold grid information from patched atomic grids"
     def __init__(self, atoms, nrad=32, fineness=1,**kwargs):
         self.version = 1
-        self.do_grad_dens = kwargs.get('do_grad_dens',Defaults.DFTDensityGradient)
+        self.do_grad_dens = kwargs.get('do_grad_dens',settings.DFTDensityGradient)
         self.atoms = atoms
         self.nrad = nrad 
         self.fineness = fineness
@@ -233,7 +233,7 @@ def pbecke(x): return 1.5*x-0.5*pow(x,3)
 def sbecke(x,n=3): return 0.5*(1-fbecke(x,n))
 
 def becke_atomic_grid_p(iat,(xp,yp,zp),atoms,**kwargs):
-    do_becke_hetero = kwargs.get('do_becke_hetero',Defaults.DFTBeckeHetero)
+    do_becke_hetero = kwargs.get('do_becke_hetero',settings.DFTBeckeHetero)
     nat = len(atoms)
     sprod = 1
     ati = atoms[iat]

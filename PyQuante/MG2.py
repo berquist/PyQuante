@@ -1,4 +1,4 @@
-import Defaults
+import settings
 from NumWrap import zeros,dot,matrixmultiply
 
 class MG2:
@@ -51,7 +51,7 @@ class MG2:
     """
     def __init__(self,atoms,nrad=32,fineness=1,**kwargs):
         self.version = 2
-        self.do_grad_dens = kwargs.get('do_grad_dens',Defaults.DFTDensityGradient)
+        self.do_grad_dens = kwargs.get('do_grad_dens',settings.DFTDensityGradient)
         self.atoms = atoms
         self.nrad = nrad
         self.fineness = fineness

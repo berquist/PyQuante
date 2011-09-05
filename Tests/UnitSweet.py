@@ -6,7 +6,11 @@ UnitSweet.py - Unit testing for Python.
 """
 
 import unittest,logging
-import PyQuante.Defaults
+import PyQuante.settings
+# Here's how to override the default integral routine at runtime:
+#from PyQuante import hgp
+#PyQuante.settings.contr_coulomb = hgp.contr_coulomb
+
 from PyQuante.CI import CIS
 from PyQuante.Molecule import Molecule
 from PyQuante.MP import MP2
@@ -227,16 +231,9 @@ class UnitTests(unittest.TestCase):
         self.assertAlmostEqual(E_exx,-7.981282,4)
 
 def runsuite():
-    # To use psyco, uncomment this line:
-    #import psyco; psyco.full()
-    verbosity = PyQuante.Defaults.TestVerbosity
-    # If you want more output, uncomment this line:
-    #logging.basicConfig(format="%(message)s",level=logging.DEBUG)
+    verbosity = PyQuante.settings.TestVerbosity
     suite = unittest.TestLoader().loadTestsFromTestCase(UnitTests)
     unittest.TextTestRunner(verbosity=verbosity).run(suite)
-    # Running without verbosity is equivalent to replacing the above
-    # two lines with the following:
-    #unittest.main()
     return
 
 def profilesuite():
@@ -247,7 +244,7 @@ def profilesuite():
 
 if __name__ == '__main__':
     import sys
-    if "-d" in sys.argv or PyQuante.Defaults.TestProfile:
+    if "-d" in sys.argv or PyQuante.settings.TestProfile:
         profilesuite()
     else:
         runsuite()

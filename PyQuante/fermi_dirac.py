@@ -10,7 +10,7 @@
  distribution. 
 """
 import sys
-import Defaults
+import settings
 from NumWrap import matrixmultiply,transpose
 from math import exp,log
 from Constants import Kboltz
@@ -42,7 +42,7 @@ def mkdens_fermi(nel,orbe,orbs,e_temp):
 
 def mkdens_occs(c,occs,**kwargs):
     "Density matrix from a set of occupations (e.g. from FD expression)."
-    tol = kwargs.get('tol',Defaults.FDOccTolerance)
+    tol = kwargs.get('tol',settings.FDOccTolerance)
     verbose = kwargs.get('verbose')
     # Determine how many orbs have occupations greater than 0
     norb = 0
@@ -96,7 +96,7 @@ def get_t0_occs(nel,nbf):
 
 def get_efermi(nel,orbe,temp,**kwargs):
     "Bisection method to get Fermi energy from Fermi-Dirac dist"
-    tol = kwargs.get('tol',Defaults.FDTolerance)
+    tol = kwargs.get('tol',settings.FDTolerance)
     verbose = kwargs.get('verbose')
 
     elow,ehigh = orbe[0]-100.,orbe[-1]

@@ -13,7 +13,7 @@
 # Todo
 # - update SimilarityTransformation to simx
 
-import Defaults
+import settings
 import logging
 from math import sqrt
 from NumWrap import matrixmultiply,identity,zeros,eigh,cholesky,inv,dot,pinv
@@ -59,7 +59,7 @@ def geigh(H,A,**kwargs):
                 
     """
     have_xfrm = kwargs.get('have_xfrm')
-    orthog = kwargs.get('orthog',Defaults.OrthogMethod)
+    orthog = kwargs.get('orthog',settings.OrthogMethod)
     if not have_xfrm:
         if orthog == 'Can':
             X = CanOrth(A)

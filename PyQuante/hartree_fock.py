@@ -11,7 +11,7 @@
 """
 
 import string,sys,time
-import Defaults
+import settings
 from fermi_dirac import get_efermi, get_fermi_occs,mkdens_occs,get_entropy
 from LA2 import geigh,mkdens,trace2
 from Ints import get2JmK,getbasis,getints,getJ,getK
@@ -83,10 +83,10 @@ def rhf(atoms,**kwargs):
                           If not None, S,h,Ints
     orbs          None    If not none, the guess orbitals
     """
-    ConvCriteria = kwargs.get('ConvCriteria',Defaults.ConvergenceCriteria)
-    MaxIter = kwargs.get('MaxIter',Defaults.MaxIter)
-    DoAveraging = kwargs.get('DoAveraging',Defaults.Averaging)
-    ETemp = kwargs.get('ETemp',Defaults.ElectronTemperature)
+    ConvCriteria = kwargs.get('ConvCriteria',settings.ConvergenceCriteria)
+    MaxIter = kwargs.get('MaxIter',settings.MaxIter)
+    DoAveraging = kwargs.get('DoAveraging',settings.Averaging)
+    ETemp = kwargs.get('ETemp',settings.ElectronTemperature)
     
     logger.info("RHF calculation on %s" % atoms.name)
 
@@ -156,11 +156,11 @@ def uhf(atoms,**kwargs):
                           If not None, S,h,Ints
     orbs          None    If not None, the guess orbitals
     """
-    ConvCriteria = kwargs.get('ConvCriteria',Defaults.ConvergenceCriteria)
-    MaxIter = kwargs.get('MaxIter',Defaults.MaxIters)
-    DoAveraging = kwargs.get('DoAveraging',Defaults.Averaging)
-    averaging = kwargs.get('averaging',Defaults.MixingFraction)
-    ETemp = kwargs.get('ETemp',Defaults.ElectronTemperature)
+    ConvCriteria = kwargs.get('ConvCriteria',settings.ConvergenceCriteria)
+    MaxIter = kwargs.get('MaxIter',settings.MaxIters)
+    DoAveraging = kwargs.get('DoAveraging',settings.Averaging)
+    averaging = kwargs.get('averaging',settings.MixingFraction)
+    ETemp = kwargs.get('ETemp',settings.ElectronTemperature)
     verbose = kwargs.get('verbose')
 
     bfs = getbasis(atoms,**kwargs)
@@ -270,11 +270,11 @@ def uhf_fixed_occ(atoms,occa, occb,**kwargs):
 
     from biorthogonal import biorthogonalize,pad_out
 
-    ConvCriteria = kwargs.get('ConvCriteria',Defaults.ConvergenceCriteria)
-    MaxIter = kwargs.get('MaxIter',Defaults.MaxIters)
-    DoAveraging = kwargs.get('DoAveraging',Defaults.Averaging)
-    averaging = kwargs.get('averaging',Defaults.MixingFraction)
-    ETemp = kwargs.get('ETemp',Defaults.ElectronTemperature)
+    ConvCriteria = kwargs.get('ConvCriteria',settings.ConvergenceCriteria)
+    MaxIter = kwargs.get('MaxIter',settings.MaxIters)
+    DoAveraging = kwargs.get('DoAveraging',settings.Averaging)
+    averaging = kwargs.get('averaging',settings.MixingFraction)
+    ETemp = kwargs.get('ETemp',settings.ElectronTemperature)
 
     bfs = getbasis(atoms,**kwargs)
 

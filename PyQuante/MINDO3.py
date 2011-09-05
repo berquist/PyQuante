@@ -9,7 +9,7 @@
  license. Please see the file LICENSE that is part of this
  distribution. 
 """
-import Defaults
+import settings
 from Constants import bohr2ang,e2,ev2kcal
 from MINDO3_Parameters import axy,Bxy
 from math import sqrt,exp,pow
@@ -352,8 +352,8 @@ def get_Hf(atoms,Eel):
 
 def scf(atoms,**kwargs):
     "Driver routine for energy calculations"
-    chg = kwargs.get('chg',Defaults.MolecularCharge)
-    #mult = kwargs.get('mult',Defaults.SpinMultiplicity)
+    chg = kwargs.get('chg',settings.MolecularCharge)
+    #mult = kwargs.get('mult',settings.SpinMultiplicity)
     mult = atoms.multiplicity
     verbose = kwargs.get('verbose')
 
@@ -381,8 +381,8 @@ def scf(atoms,**kwargs):
 def scfclosed(atoms,F0,nclosed,**kwargs):
     "SCF procedure for closed-shell molecules"
     verbose = kwargs.get('verbose')
-    do_avg = kwargs.get('avg',Defaults.MINDOAveraging)
-    maxiter = kwargs.get('maxiter',Defaults.MaxIter)
+    do_avg = kwargs.get('avg',settings.MINDOAveraging)
+    maxiter = kwargs.get('maxiter',settings.MaxIter)
     D = get_guess_D(atoms)
     Eold = 0
     if do_avg: avg = SimpleAverager(do_avg)
@@ -490,8 +490,8 @@ def energy_forces_factories(atoms,**kwargs):
     # functions and the initial coordinates are useful for calling the
     # optimizer functions.
     verbose = kwargs.get('verbose')
-    return_etot_as_e = kwargs.get('return_etot_as_e',Defaults.MINDOReturnEtot)
-    numeric_forces = kwargs.get('numeric_forces',Defaults.MINDONumericForces)
+    return_etot_as_e = kwargs.get('return_etot_as_e',settings.MINDOReturnEtot)
+    numeric_forces = kwargs.get('numeric_forces',settings.MINDONumericForces)
     nat = len(atoms)
     coords = zeros(3*nat,'d')
     for i in xrange(nat):
@@ -572,8 +572,8 @@ def get_energy_forces(atoms,**kwargs):
 def numeric_forces(atoms,D=None,**kwargs):
     "Compute numerical forces on atoms"
     # D is ignored here.
-    dx = kwargs.get('dx',Defaults.NumericForceDx)
-    sym = kwargs.get('sym',Defaults.NumericForceSym)
+    dx = kwargs.get('dx',settings.NumericForceDx)
+    sym = kwargs.get('sym',settings.NumericForceSym)
     return_energy = kwargs.get('return_energy')
     nat = len(atoms)
     Forces = zeros((nat,3),'d')

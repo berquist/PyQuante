@@ -20,8 +20,6 @@ from NumWrap import zeros,array
 from math import sqrt
 
 from PyQuante.cints import overlap
-from PyQuante.chgp import contr_coulomb
-#from PyQuante.crys import contr_coulomb
 from PyQuante.contracted_gto import ContractedGTO
 
 class CGBF(ContractedGTO):
@@ -187,16 +185,6 @@ class CGBF(ContractedGTO):
         for prim in self.prims:
             val += prim.grad(x,y,z)
         return self.norm*val
-
-def coulomb(a,b,c,d):
-    "Coulomb interaction between 4 contracted Gaussians"
-
-    Jij = contr_coulomb(a.pexps,a.pcoefs,a.pnorms,a.origin,a.powers,
-                        b.pexps,b.pcoefs,b.pnorms,b.origin,b.powers,
-                        c.pexps,c.pcoefs,c.pnorms,c.origin,c.powers,
-                        d.pexps,d.pcoefs,d.pnorms,d.origin,d.powers)
-    
-    return a.norm*b.norm*c.norm*d.norm*Jij
 
 def three_center(a,b,c):
     import PGBF

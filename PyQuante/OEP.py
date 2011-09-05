@@ -1,7 +1,7 @@
 "Yang/Wu's OEP implementation, in PyQuante."
 
 from math import sqrt
-import Defaults
+import settings
 from PyQuante.NumWrap import zeros,matrixmultiply,transpose,dot,identity,\
      array,solve
 from PyQuante.Ints import getbasis, getints, getJ,get2JmK,getK
@@ -55,7 +55,7 @@ class EXXSolver:
 
     def iterate(self,**kwargs):
         self.iter = 0
-        self.etemp = kwargs.get("etemp",Defaults.DFTElectronTemperature)
+        self.etemp = kwargs.get("etemp",settings.DFTElectronTemperature)
         logging.debug("iter    Energy     <b|b>")
         logging.debug("----    ------     -----")
         self.b = fminBFGS(self.get_energy,self.b,self.get_gradient,logger=logging)
@@ -136,7 +136,7 @@ class UEXXSolver:
         return
 
     def iterate(self,**kwargs):
-        self.etemp = kwargs.get("etemp",Defaults.DFTElectronTemperature)
+        self.etemp = kwargs.get("etemp",settings.DFTElectronTemperature)
         self.iter = 0
         logging.debug("iter    Energy     <b|b>")
         logging.debug("----    ------     -----")
@@ -236,8 +236,8 @@ def oep(atoms,orbs,energy_func,grad_func=None,**kwargs):
                           If not None, S,h,Ints
     """
     verbose = kwargs.get('verbose')
-    ETemp = kwargs.get('ETemp',Defaults.DFTElectronTemperature)
-    opt_method = kwargs.get('opt_method',Defaults.OEPOptMethod)
+    ETemp = kwargs.get('ETemp',settings.DFTElectronTemperature)
+    opt_method = kwargs.get('opt_method',settings.OEPOptMethod)
 
     bfs = getbasis(atoms,**kwargs)
 
@@ -408,8 +408,8 @@ def oep_hf_an(atoms,orbs,**kwargs):
     integrals     None    The one- and two-electron integrals to use
                           If not None, S,h,Ints
     """
-    maxiter = kwargs.get('maxiter',Defaults.OEPIters)
-    tol = kwargs.get('tol',Defaults.OEPTolerance)
+    maxiter = kwargs.get('maxiter',settings.OEPIters)
+    tol = kwargs.get('tol',settings.OEPTolerance)
     bfs = getbasis(atoms,**kwargs)
 
     # The basis set for the potential can be set different from
@@ -528,9 +528,9 @@ def oep_uhf_an(atoms,orbsa,orbsb,**kwargs):
     integrals     None    The one- and two-electron integrals to use
                           If not None, S,h,Ints
     """
-    maxiter = kwargs.get('maxiter',Defaults.OEPIters)
-    tol = kwargs.get('tol',Defaults.OEPTolerance)
-    ETemp = kwargs.get('ETemp',Defaults.DFTElectronTemperature)
+    maxiter = kwargs.get('maxiter',settings.OEPIters)
+    tol = kwargs.get('tol',settings.OEPTolerance)
+    ETemp = kwargs.get('ETemp',settings.DFTElectronTemperature)
     bfs = getbasis(atoms,**kwargs)
 
     # The basis set for the potential can be set different from
