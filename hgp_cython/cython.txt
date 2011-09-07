@@ -1,0 +1,34 @@
+Unknown compiler flag: --help
+Cython (http://cython.org) is a compiler for code written in the
+Cython language.  Cython is based on Pyrex by Greg Ewing.
+
+Usage: cython [options] sourcefile.pyx ...
+
+Options:
+  -V, --version                  Display version number of cython compiler
+  -l, --create-listing           Write error messages to a listing file
+  -I, --include-dir <directory>  Search for include files in named directory
+                                 (multiply include directories are allowed).
+  -o, --output-file <filename>   Specify name of generated C file
+  -t, --timestamps               Only compile newer source files (implied with -r)
+  -f, --force                    Compile all source files (overrides implied -t)
+  -q, --quiet                    Don't print module names in recursive mode
+  -v, --verbose                  Be verbose, print file names on multiple compilation
+  -p, --embed-positions          If specified, the positions in Cython files of each
+                                 function definition is embedded in its docstring.
+  -z, --pre-import <module>      If specified, assume undeclared names in this 
+                                 module. Emulates the behavior of putting 
+                                 "from <module> import *" at the top of the file. 
+  --cleanup <level>              Release interned objects on python exit, for memory debugging. 
+                                 Level indicates aggressiveness, default 0 releases nothing. 
+  -w, --working <directory>      Sets the working directory for Cython (the directory modules 
+                                 are searched from)
+
+  -D, --no-docstrings            Remove docstrings.
+  -a, --annotate                 Produce a colorized HTML version of the source.
+  --line-directives              Produce #line directives pointing to the .pyx source
+  --cplus                        Output a c++ rather than c file.
+  --embed                        Embed the Python interpreter in a main() method.
+  -2                             Compile based on Python-2 syntax and code semantics.
+  -3                             Compile based on Python-3 syntax and code semantics.
+  -X, --directive <name>=<value>[,<name=value,...] Overrides a compiler directive

@@ -290,9 +290,10 @@ def ParseXYZLines(name,xyz_lines,**kwargs):
     return Molecule(name,atoms,**kwargs)
 
 def mol2mpqc(mol,**kwargs):
+    from PyQuante.Element import symbol
     xc = kwargs.get('xc','B3LYP')
     basis = kwargs.get('basis','6-31g**')
-    lines = ['%% %s calculation with MPQC' % xc,
+    lines = ['%% %s %s calculation with MPQC' % (mol.name,xc),
              'optimize: yes',
              'method: KS (xc=%s)' % xc,
              'basis: %s' % basis,

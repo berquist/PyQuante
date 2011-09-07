@@ -36,7 +36,7 @@ from NumWrap import array
 
 from PyQuante.cints import kinetic,overlap,nuclear_attraction,fact2,dist2
 from PyQuante.cints import binomial, three_center_1D
-from PyQuante.chgp import coulomb_repulsion
+from PyQuante.Defaults import coulomb_repulsion
 
 #added 2/8/07 by Hatem Helal hhh23@cam.ac.uk
 #probably need to write the C version in cints...

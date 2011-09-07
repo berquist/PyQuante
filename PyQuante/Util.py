@@ -32,3 +32,4 @@ def cleansym(s):
        the first non-letter) in an element name."""
     import re 
     return re.split('[^a-zA-Z]',s)[0]
+

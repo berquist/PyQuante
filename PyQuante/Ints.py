@@ -10,7 +10,7 @@
  distribution. 
 """
 import settings
-from NumWrap import zeros,dot,reshape
+from PyQuante.NumWrap import zeros,dot,reshape
 from PyQuante.cints import ijkl2intindex as intindex
 from PyQuante.Basis.Tools import get_basis_data
 import logging
