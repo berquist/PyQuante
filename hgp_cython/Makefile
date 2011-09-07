@@ -1,5 +1,7 @@
 pyinc = -I/opt/local/Library/Frameworks/Python.framework/Versions/2.7/include/python2.7/ -I/opt/local/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/numpy/core/include/
 
+all: hgp_cython.so
+
 hgp_cython.o: hgp_cython.c
 	gcc -dynamic -pipe -fPIC -fwrapv -fno-common -fno-strict-aliasing $(pyinc) -c $^ -o $@
 
