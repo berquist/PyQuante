@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
@@ -12,14 +14,15 @@
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
         VERSION:     '1.6.3',
-        COLLAPSE_MODINDEX: false,
+        COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
       };
     </script>
     <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="PyQuante v1.6.3 documentation" href="" /> 
+    <link rel="top" title="PyQuante v1.6.3 documentation" href="#" /> 
   </head>
   <body>
     <div class="related">
@@ -28,7 +31,7 @@
         <li class="right" style="margin-right: 10px">
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
-        <li><a href="">PyQuante v1.6.3 documentation</a> &raquo;</li> 
+        <li><a href="#">PyQuante v1.6.3 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -39,8 +42,10 @@
             
   <div class="section" id="pyquante-python-quantum-chemistry">
 <h1>PyQuante: Python Quantum Chemistry<a class="headerlink" href="#pyquante-python-quantum-chemistry" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
 <ul class="simple">
 </ul>
+</div>
 </div>
 <div class="section" id="overview">
 <h1>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h1>
@@ -145,11 +150,10 @@ install process:</p>
 <h3>Specifying a molecule<a class="headerlink" href="#specifying-a-molecule" title="Permalink to this headline">¶</a></h3>
 <p>You can specify a molecule using the following code:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">PyQuante.Molecule</span> <span class="kn">import</span> <span class="n">Molecule</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">h2</span> <span class="o">=</span> <span class="n">Molecule</span><span class="p">(</span><span class="s">&#39;h2&#39;</span><span class="p">,[(</span><span class="mf">1</span><span class="p">,(</span><span class="mf">0</span><span class="p">,</span><span class="mf">0</span><span class="p">,</span><span class="mf">0</span><span class="p">)),(</span><span class="mf">1</span><span class="p">,(</span><span class="mf">1.4</span><span class="p">,</span><span class="mf">0</span><span class="p">,</span><span class="mf">0</span><span class="p">))])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">h2</span> <span class="o">=</span> <span class="n">Molecule</span><span class="p">(</span><span class="s">&#39;h2&#39;</span><span class="p">,[(</span><span class="mi">1</span><span class="p">,(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">)),(</span><span class="mi">1</span><span class="p">,(</span><span class="mf">1.4</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">))])</span>
 </pre></div>
 </div>
-<p>&lt;&lt;&lt;&lt;&lt;&lt;&lt; .mine
-You can specify the units (either &#8216;Bohr&#8217; or &#8216;Angstrom&#8217;):</p>
+<p>You can specify the units (either &#8216;Bohr&#8217; or &#8216;Angstrom&#8217;):</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">h2</span> <span class="o">=</span> <span class="n">Molecule</span><span class="p">(</span><span class="s">&#39;H2&#39;</span><span class="p">,</span>
 <span class="go">                 [(1,  (0.00000000,     0.00000000,     0.36628549)),</span>
 <span class="go">                  (1,  (0.00000000,     0.00000000,    -0.36628549))],</span>
@@ -163,7 +167,7 @@ You can specify the units (either &#8216;Bohr&#8217; or &#8216;Angstrom&#8217;):
 </pre></div>
 </div>
 <p>You can also specify the spin multiplicity:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">li</span> <span class="o">=</span> <span class="n">Molecule</span><span class="p">(</span><span class="s">&#39;Li&#39;</span><span class="p">,</span><span class="n">atomlist</span> <span class="o">=</span> <span class="p">[(</span><span class="mf">3</span><span class="p">,(</span><span class="mf">0</span><span class="p">,</span><span class="mf">0</span><span class="p">,</span><span class="mf">0</span><span class="p">))],</span> <span class="n">multiplicity</span><span class="o">=</span><span class="mf">2</span><span class="p">)</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">li</span> <span class="o">=</span> <span class="n">Molecule</span><span class="p">(</span><span class="s">&#39;Li&#39;</span><span class="p">,</span><span class="n">atomlist</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">3</span><span class="p">,(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">))],</span> <span class="n">multiplicity</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>As well as charge:</p>
@@ -174,10 +178,9 @@ You can specify the units (either &#8216;Bohr&#8217; or &#8216;Angstrom&#8217;):
 <span class="go">                   charge=-1)</span>
 </pre></div>
 </div>
-<hr class="docutils" />
-<p>&gt;&gt;&gt;&gt;&gt;&gt;&gt; .r145
-Simple HF calculation
-.....................</p>
+</div>
+<div class="section" id="simple-hf-calculation">
+<h3>Simple HF calculation<a class="headerlink" href="#simple-hf-calculation" title="Permalink to this headline">¶</a></h3>
 <p>Using the above definition, you can run a simple HF calculation via:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">PyQuante.hartree_fock</span> <span class="kn">import</span> <span class="n">rhf</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">en</span><span class="p">,</span><span class="n">orbe</span><span class="p">,</span><span class="n">orbs</span> <span class="o">=</span> <span class="n">rhf</span><span class="p">(</span><span class="n">h2</span><span class="p">)</span>
@@ -280,21 +283,21 @@ syntax for Molecule is:</p>
 <p>The atomlist is a list of atomic numbers and a tuple with the x,y,z
 coordinates. Here&#8217;s an example for constructing a molecule object for
 water:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">h2o</span><span class="o">=</span><span class="n">Molecule</span><span class="p">(</span><span class="s">&#39;h2o&#39;</span><span class="p">,[(</span><span class="mf">8</span><span class="p">,(</span><span class="mf">0</span><span class="p">,</span><span class="mf">0</span><span class="p">,</span><span class="mf">0</span><span class="p">)),(</span><span class="mf">1</span><span class="p">,(</span><span class="mf">1.0</span><span class="p">,</span><span class="mf">0</span><span class="p">,</span><span class="mf">0</span><span class="p">)),(</span><span class="mf">1</span><span class="p">,(</span><span class="mf">0</span><span class="p">,</span><span class="mf">1.0</span><span class="p">,</span><span class="mf">0</span><span class="p">))],</span><span class="n">units</span> <span class="o">=</span> <span class="s">&#39;Angstrom&#39;</span><span class="p">)</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">h2o</span><span class="o">=</span><span class="n">Molecule</span><span class="p">(</span><span class="s">&#39;h2o&#39;</span><span class="p">,[(</span><span class="mi">8</span><span class="p">,(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">)),(</span><span class="mi">1</span><span class="p">,(</span><span class="mf">1.0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">)),(</span><span class="mi">1</span><span class="p">,(</span><span class="mi">0</span><span class="p">,</span><span class="mf">1.0</span><span class="p">,</span><span class="mi">0</span><span class="p">))],</span><span class="n">units</span> <span class="o">=</span> <span class="s">&#39;Angstrom&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>(of course the bond-angle is 90 degrees here, and is thus completely
 wrong, but this is only an example). Here&#8217;s an example for the
 hydroxide ion that shows the use of the charge field:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">oh</span> <span class="o">=</span> <span class="n">Molecule</span><span class="p">(</span><span class="s">&#39;OH-&#39;</span><span class="p">,[(</span><span class="mf">8</span><span class="p">,(</span><span class="mf">0</span><span class="p">,</span><span class="mf">0</span><span class="p">,</span><span class="mf">0</span><span class="p">)),(</span><span class="mf">1</span><span class="p">,(</span><span class="mf">0.96</span><span class="p">,</span><span class="mf">0</span><span class="p">,</span><span class="mf">0</span><span class="p">))],</span> <span class="n">units</span> <span class="o">=</span> <span class="s">&#39;Angstrom&#39;</span><span class="p">,</span> <span class="n">charge</span><span class="o">=-</span><span class="mf">1</span><span class="p">)</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">oh</span> <span class="o">=</span> <span class="n">Molecule</span><span class="p">(</span><span class="s">&#39;OH-&#39;</span><span class="p">,[(</span><span class="mi">8</span><span class="p">,(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">)),(</span><span class="mi">1</span><span class="p">,(</span><span class="mf">0.96</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">))],</span> <span class="n">units</span> <span class="o">=</span> <span class="s">&#39;Angstrom&#39;</span><span class="p">,</span> <span class="n">charge</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Here&#8217;s an example for the NO molecule that shows the use of the multiplicity field:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">no</span> <span class="o">=</span> <span class="n">Molecule</span><span class="p">(</span><span class="s">&#39;NO&#39;</span><span class="p">,</span> <span class="p">[(</span><span class="mf">7</span><span class="p">,(</span><span class="mf">0</span><span class="p">,</span><span class="mf">0</span><span class="p">,</span><span class="mf">0</span><span class="p">)),(</span><span class="mf">8</span><span class="p">,(</span><span class="mf">2.12955</span><span class="p">,</span><span class="mf">0</span><span class="p">,</span><span class="mf">0</span><span class="p">))],</span><span class="n">multiplicity</span><span class="o">=</span><span class="mf">2</span><span class="p">)</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">no</span> <span class="o">=</span> <span class="n">Molecule</span><span class="p">(</span><span class="s">&#39;NO&#39;</span><span class="p">,</span> <span class="p">[(</span><span class="mi">7</span><span class="p">,(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">)),(</span><span class="mi">8</span><span class="p">,(</span><span class="mf">2.12955</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">))],</span><span class="n">multiplicity</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>As of version 1.5.1, you may construct molecules using the atomic symbol instead of the atomic number, e.g.:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">h2o</span><span class="o">=</span><span class="n">Molecule</span><span class="p">(</span><span class="s">&#39;h2o&#39;</span><span class="p">,[(</span><span class="s">&#39;O&#39;</span><span class="p">,(</span><span class="mf">0</span><span class="p">,</span><span class="mf">0</span><span class="p">,</span><span class="mf">0</span><span class="p">)),</span> <span class="p">(</span><span class="s">&#39;H&#39;</span><span class="p">,(</span><span class="mf">1.0</span><span class="p">,</span><span class="mf">0</span><span class="p">,</span><span class="mf">0</span><span class="p">)),(</span><span class="s">&#39;H&#39;</span><span class="p">,(</span><span class="mf">0</span><span class="p">,</span><span class="mf">1.0</span><span class="p">,</span><span class="mf">0</span><span class="p">))],</span><span class="n">units</span> <span class="o">=</span> <span class="s">&#39;Angstrom&#39;</span><span class="p">)</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">h2o</span><span class="o">=</span><span class="n">Molecule</span><span class="p">(</span><span class="s">&#39;h2o&#39;</span><span class="p">,[(</span><span class="s">&#39;O&#39;</span><span class="p">,(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">)),</span> <span class="p">(</span><span class="s">&#39;H&#39;</span><span class="p">,(</span><span class="mf">1.0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">)),(</span><span class="s">&#39;H&#39;</span><span class="p">,(</span><span class="mi">0</span><span class="p">,</span><span class="mf">1.0</span><span class="p">,</span><span class="mi">0</span><span class="p">))],</span><span class="n">units</span> <span class="o">=</span> <span class="s">&#39;Angstrom&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Currently, the semiempirical code uses an extended verion of the
@@ -433,11 +436,27 @@ the basis function. The terms li, mi, ni are the exponents of the
 Cartesian powers for the basis function. And the terms alphai are the
 Gaussian exponents.</p>
 </div>
+<div class="section" id="a-note-on-changing-the-method-for-computing-the-integrals">
+<h4>A note on changing the method for computing the integrals<a class="headerlink" href="#a-note-on-changing-the-method-for-computing-the-integrals" title="Permalink to this headline">¶</a></h4>
+<p>Starting with v1.6.5 (currently the SVN trunk), all default behavior
+uses the settings.py module. Consequently, any of these presets can be
+changed at runtime by importing and changing the behavior. For
+example, to change the integral method to use the python version of
+the Head-Gordon/Pople method (rather than the much faster C version),
+you would use (at the beginning of your script)</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">PyQuante.settings</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">PyQuante</span> <span class="kn">import</span> <span class="n">hgp</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">PyQuante</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">contr_coulomb</span> <span class="o">=</span> <span class="n">hgp</span><span class="o">.</span><span class="n">contr_coulomb</span>
+<span class="go">(the rest of the script follows here)</span>
+</pre></div>
+</div>
+<p>Other settings are changed similarly.</p>
+</div>
 </div>
 <div class="section" id="hartree-fock-calculations">
 <h3>Hartree-Fock Calculations<a class="headerlink" href="#hartree-fock-calculations" title="Permalink to this headline">¶</a></h3>
 <p>This section is under construction. In the meantime, see the PyQuante
-Cookbook recipe <a href="#id1"><span class="problematic" id="id2">`Simple HF calculation`_</span></a> for an example of a HF
+Cookbook recipe <a class="reference internal" href="#simple-hf-calculation">Simple HF calculation</a> for an example of a HF
 calculation using PyQuante.</p>
 </div>
 <div class="section" id="density-functional-theory-calculations">
@@ -513,69 +532,71 @@ either the Gnu Free Documentation License or the CC-BY-SA License.</p>
       </div>
       <div class="sphinxsidebar">
         <div class="sphinxsidebarwrapper">
-            <h3><a href="">Table Of Contents</a></h3>
-            <ul>
-<li><a class="reference external" href="">PyQuante: Python Quantum Chemistry</a><ul>
+  <h3><a href="#">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">PyQuante: Python Quantum Chemistry</a><ul>
 </ul>
 </li>
-<li><a class="reference external" href="#overview">Overview</a><ul>
-<li><a class="reference external" href="#current-features">Current features</a></li>
-<li><a class="reference external" href="#getting-started">Getting Started</a></li>
-<li><a class="reference external" href="#license">License</a></li>
+<li><a class="reference internal" href="#overview">Overview</a><ul>
+<li><a class="reference internal" href="#current-features">Current features</a></li>
+<li><a class="reference internal" href="#getting-started">Getting Started</a></li>
+<li><a class="reference internal" href="#license">License</a></li>
 </ul>
 </li>
-<li><a class="reference external" href="#download-and-installation">Download and Installation</a><ul>
-<li><a class="reference external" href="#prerequisites">Prerequisites</a></li>
-<li><a class="reference external" href="#building-the-code">Building the Code</a></li>
+<li><a class="reference internal" href="#download-and-installation">Download and Installation</a><ul>
+<li><a class="reference internal" href="#prerequisites">Prerequisites</a></li>
+<li><a class="reference internal" href="#building-the-code">Building the Code</a></li>
 </ul>
 </li>
-<li><a class="reference external" href="#using-the-code">Using the Code</a><ul>
-<li><a class="reference external" href="#cookbook">Cookbook</a><ul>
-<li><a class="reference external" href="#specifying-a-molecule">Specifying a molecule</a></li>
-<li><a class="reference external" href="#simple-dft-calculation">Simple DFT calculation</a></li>
-<li><a class="reference external" href="#open-shell-hartree-fock">Open Shell Hartree Fock</a></li>
-<li><a class="reference external" href="#mp2-calculations">MP2 Calculations</a></li>
-<li><a class="reference external" href="#mindo-3-calculations">MINDO/3 Calculations</a></li>
+<li><a class="reference internal" href="#using-the-code">Using the Code</a><ul>
+<li><a class="reference internal" href="#cookbook">Cookbook</a><ul>
+<li><a class="reference internal" href="#specifying-a-molecule">Specifying a molecule</a></li>
+<li><a class="reference internal" href="#simple-hf-calculation">Simple HF calculation</a></li>
+<li><a class="reference internal" href="#simple-dft-calculation">Simple DFT calculation</a></li>
+<li><a class="reference internal" href="#open-shell-hartree-fock">Open Shell Hartree Fock</a></li>
+<li><a class="reference internal" href="#mp2-calculations">MP2 Calculations</a></li>
+<li><a class="reference internal" href="#mindo-3-calculations">MINDO/3 Calculations</a></li>
 </ul>
 </li>
-<li><a class="reference external" href="#users-guide">Users Guide</a><ul>
-<li><a class="reference external" href="#molecules">Molecules</a></li>
-<li><a class="reference external" href="#basis-sets">Basis Sets</a></li>
-<li><a class="reference external" href="#output">Output</a></li>
-<li><a class="reference external" href="#integrals">Integrals</a><ul>
-<li><a class="reference external" href="#one-electron-integrals">One-electron integrals</a></li>
-<li><a class="reference external" href="#two-electron-integrals">Two-electron integrals</a></li>
+<li><a class="reference internal" href="#users-guide">Users Guide</a><ul>
+<li><a class="reference internal" href="#molecules">Molecules</a></li>
+<li><a class="reference internal" href="#basis-sets">Basis Sets</a></li>
+<li><a class="reference internal" href="#output">Output</a></li>
+<li><a class="reference internal" href="#integrals">Integrals</a><ul>
+<li><a class="reference internal" href="#one-electron-integrals">One-electron integrals</a></li>
+<li><a class="reference internal" href="#two-electron-integrals">Two-electron integrals</a></li>
+<li><a class="reference internal" href="#a-note-on-changing-the-method-for-computing-the-integrals">A note on changing the method for computing the integrals</a></li>
 </ul>
 </li>
-<li><a class="reference external" href="#hartree-fock-calculations">Hartree-Fock Calculations</a></li>
-<li><a class="reference external" href="#density-functional-theory-calculations">Density Functional Theory Calculations</a></li>
-<li><a class="reference external" href="#semiempirical-calculations">Semiempirical Calculations</a></li>
+<li><a class="reference internal" href="#hartree-fock-calculations">Hartree-Fock Calculations</a></li>
+<li><a class="reference internal" href="#density-functional-theory-calculations">Density Functional Theory Calculations</a></li>
+<li><a class="reference internal" href="#semiempirical-calculations">Semiempirical Calculations</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li><a class="reference external" href="#todo-wish-list">Todo/Wish List</a></li>
-<li><a class="reference external" href="#copyright-information">Copyright information</a></li>
+<li><a class="reference internal" href="#todo-wish-list">Todo/Wish List</a></li>
+<li><a class="reference internal" href="#copyright-information">Copyright information</a></li>
 </ul>
 
-            <h3>This Page</h3>
-            <ul class="this-page-menu">
-              <li><a href="_sources/index.txt"
-                     rel="nofollow">Show Source</a></li>
-            </ul>
-          <div id="searchbox" style="display: none">
-            <h3>Quick search</h3>
-              <form class="search" action="search.html" method="get">
-                <input type="text" name="q" size="18" />
-                <input type="submit" value="Go" />
-                <input type="hidden" name="check_keywords" value="yes" />
-                <input type="hidden" name="area" value="default" />
-              </form>
-              <p class="searchtip" style="font-size: 90%">
-              Enter search terms or a module, class or function name.
-              </p>
-          </div>
-          <script type="text/javascript">$('#searchbox').show(0);</script>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/index.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>
@@ -586,12 +607,12 @@ either the Gnu Free Documentation License or the CC-BY-SA License.</p>
         <li class="right" style="margin-right: 10px">
           <a href="genindex.html" title="General Index"
              >index</a></li>
-        <li><a href="">PyQuante v1.6.3 documentation</a> &raquo;</li> 
+        <li><a href="#">PyQuante v1.6.3 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
-      &copy; Copyright 2009, Rick Muller.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.6.3.
+        &copy; Copyright 2009, Rick Muller.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
     </div>
   </body>
 </html>

@@ -1,10 +1,13 @@
+import math
+import numpy as np # is the duplicate import really necessary?
 cimport numpy as np
 DTYPE = np.double
+
 cdef double product_center_1D(double alpha, double ax, double beta, double bx):
     return (alpha*ax+beta*bx)/(alpha+beta)
 
 cdef double dist2(double xa,double ya,double za,double xb,double yb,double zb):
-    return np.pow(xa-xb,2)+np.pow(ya-yb,2)+np.pow(za-zb,2)
+    return math.pow(xa-xb,2)+math.pow(ya-yb,2)+math.pow(za-zb,2)
 
 #cdef double dist(double xa,double ya,double za,double xb,double yb,double zb):
 #    return sqrt(dist2(xa,ya,za,xb,yb,zb))
@@ -52,10 +55,10 @@ def vrr(xyza,double norma,lmna,double alphaa,
     wz = product_center_1D(zeta,pz,eta,qz)
 
     rab2 = dist2(xa,ya,za,xb,yb,zb)
-    Kab = np.sqrt(2)*np.pow(np.pi,1.25)/(alphaa+alphab)\
+    Kab = np.sqrt(2)*math.pow(np.pi,1.25)/(alphaa+alphab)\
           *np.exp(-alphaa*alphab/(alphaa+alphab)*rab2)
     rcd2 = dist2(xc,yc,zc,xd,yd,zd)
-    Kcd = np.sqrt(2)*np.pow(np.pi,1.25)/(alphac+alphad)\
+    Kcd = np.sqrt(2)*math.pow(np.pi,1.25)/(alphac+alphad)\
           *np.exp(-alphac*alphad/(alphac+alphad)*rcd2)
     rpq2 = dist2(px,py,pz,qx,qy,qz)
     T = zeta*eta/(zeta+eta)*rpq2
@@ -68,7 +71,8 @@ def vrr(xyza,double norma,lmna,double alphaa,
         Fgterms[im]=(2.*T*Fgterms[im+1]+np.exp(-T))/(2.*im+1)
 
     # Store the vrr values as a 7 dimensional array
-    vrr_terms = np.ndarray([la,ma,na,lc,mc,nc,im],DTYPE)
+    vrr_terms = np.ndarray([la,ma,na,lc,mc,nc,mtot+1],DTYPE)
+    #vrr_terms = {}
     for im in xrange(mtot+1):
         vrr_terms[0,0,0,0,0,0,im] = (
             norma*normb*normc*normd*Kab*Kcd/np.sqrt(zeta+eta)*Fgterms[im]

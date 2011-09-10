@@ -27,7 +27,6 @@ Operating System :: Unix
 Operating System :: MacOS
 """
 from distutils.core import setup, Extension
-from setuptools import setup, Extension
 import distutils.sysconfig
 sysconfig = distutils.sysconfig.get_config_vars()
 import os, sys, glob, stat

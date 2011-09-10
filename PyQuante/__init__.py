@@ -34,3 +34,4 @@ from PyQuante.Molecule import Molecule
 from PyQuante.PyQuante2 import SCF
 from PyQuante.CGBF import CGBF
 from PyQuante.logger import configure_output
+from PyQuante.TestMolecules import h,h2,h2o,oh,he,li,lih,co,ch4,c6h6,li_p,li_m

@@ -30,8 +30,8 @@ except ImportError:
     libint_enabled = False
     logging.warning("libint extension not found, switching to normal ERI computation")
 
-import chgp,cints,crys
-import pyints,hgp,rys
+from PyQuante import chgp,cints,crys
+from PyQuante import pyints,hgp,rys
 contr_coulomb = chgp.contr_coulomb
 # Here's how to manually turn off libint even if it can be imported
 #libint_enabled = False
