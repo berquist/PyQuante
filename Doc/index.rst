@@ -128,7 +128,6 @@ You can specify a molecule using the following code::
     >>> from PyQuante.Molecule import Molecule
     >>> h2 = Molecule('h2',[(1,(0,0,0)),(1,(1.4,0,0))])
 
-<<<<<<< .mine
 You can specify the units (either 'Bohr' or 'Angstrom')::
 
   >>> h2 = Molecule('H2',
@@ -154,10 +153,6 @@ As well as charge::
                      units='Angstrom',
                      charge=-1)
 
-
-=======
-
->>>>>>> .r145
 Simple HF calculation
 .....................
 
@@ -429,6 +424,22 @@ basis functions. The terms normi are the normalization constants for
 the basis function. The terms li, mi, ni are the exponents of the
 Cartesian powers for the basis function. And the terms alphai are the
 Gaussian exponents.
+
+A note on changing the method for computing the integrals
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Starting with v1.6.5 (currently the SVN trunk), all default behavior
+uses the settings.py module. Consequently, any of these presets can be
+changed at runtime by importing and changing the behavior. For
+example, to change the integral method to use the python version of
+the Head-Gordon/Pople method (rather than the much faster C version),
+you would use (at the beginning of your script)
+
+>>> import PyQuante.settings
+>>> from PyQuante import hgp
+>>> PyQuante.settings.contr_coulomb = hgp.contr_coulomb
+(the rest of the script follows here)
+
+Other settings are changed similarly.
 
 
 Hartree-Fock Calculations
