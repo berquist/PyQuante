@@ -96,7 +96,7 @@ class MG2:
         from PyQuante.AtomicGrid import AtomicGrid
         atomgrids = []
         for atom in self.atoms:
-            atomgrids.append(AtomicGrid(atom,**kwargs))
+            atomgrids.append(AtomicGrid(atom,nrad=self.nrad,**kwargs))
         self.patch_atoms(atomgrids)
         return atomgrids
 
