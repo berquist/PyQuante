@@ -38,6 +38,7 @@ class BasisSet(object):
                     #bf = ContractedGTO(primlist,coefs)
                     #bf.normalize()
                     [cgbf.add_primitive(alpha,coef) for alpha,coef in prims]
+                    cgbf.normalize()
                     bfs.append(cgbf) # Normal ordering
                     
                     # Shell ordering
