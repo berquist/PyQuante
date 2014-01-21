@@ -169,7 +169,7 @@ class CGBF(ContractedGTO):
                     overlap(ipbf.exp,ipbf.powers,ipbf.origin,
                             jpbf.exp,ipbf.powers,origin_plus)
                     -overlap(ipbf.exp,ipbf.powers,ipbf.origin,
-                            jpbf.exp,ipbf.powers,origin_plus)
+                            jpbf.exp,ipbf.powers,origin_minus)
                     )/delta
         return self.norm*other.norm*dSij
 
