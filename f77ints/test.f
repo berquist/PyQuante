@@ -6,8 +6,9 @@
      $     alphac,xc,yc,zc,xnormc,
      $     alphad,xd,yd,zd,xnormd,
      $     alphae,xe,ye,ze,xnorme,
+     $     alphaf,xf,yf,zf,xnormf,
      $     answ,one
-      integer la,ma,na,lb,mb,nb,lc,mc,nc,ld,md,nd,le,me,ne,i
+      integer la,ma,na,lb,mb,nb,lc,mc,nc,ld,md,nd,le,me,ne,i,lf,mf,nf
 
       real*8 coulomb_repulsion,overlap,kinetic
       integer fact,fact2,binomial
@@ -121,6 +122,24 @@ cp4 = PGBF(0.2,(0,1,0),(0,0,1))
      $     xb, yb, zb, xnormb,lb, mb, nb, alphab,
      $     xc, yc, zc, xnormc,lc, mc, nc, alphac,
      $     xd, yd, zd, xnormd,ld, md, nd, alphad)
+      print*, answ
+
+      alphaf = 1.0d0
+      xf = 1.d0
+      yf = 0.d0
+      zf = 0.d0
+      lf = 1
+      mf = 0
+      nf = 0
+      xnormf = one/sqrt(overlap(alphaf,lf,mf,nf,xf,yf,zf,
+     $     alphaf,lf,mf,nf,xf,yf,zf))
+
+      print*, "Testing another coulomb repulsion term from Fortran"
+      print*, "...correct answer sould be 0.92150965"
+      answ = coulomb_repulsion(xf,yf,zf,xnormf,lf,mf,nf,alphaf,
+     $     xf,yf,zf,xnormf,lf,mf,nf,alphaf,
+     $     xf,yf,zf,xnormf,lf,mf,nf,alphaf,
+     $     xf,yf,zf,xnormf,lf,mf,nf,alphaf)
       print*, answ
 
       stop

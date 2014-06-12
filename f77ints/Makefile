@@ -1,4 +1,5 @@
 FFLAGS = -Wall
+FC = gfortran
 
 all: fints.o test.e
 
