@@ -69,7 +69,7 @@ def get1ints(bfs,atoms):
             S[i,j] = bfi.overlap(bfj)
             h[i,j] = bfi.kinetic(bfj)
             for atom in atoms:
-                h[i,j] = h[i,j] + atom.atno*bfi.nuclear(bfj,atom.pos())
+                h[i,j] = h[i,j] + atom.Z*bfi.nuclear(bfj,atom.pos())
     return S,h
 
 def getT(bfs):

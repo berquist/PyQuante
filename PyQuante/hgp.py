@@ -633,26 +633,102 @@ def test_vrr():
     norma = normb = normc = normd = 1.
     alphaa = alphab = alphac = alphad = 1.
 
-    la,ma,na = 0,0,0
-    lc,mc,nc = 0,0,0
-
     M = 0
-    t0 = time.time()
-    val1 = vrr((xa,ya,za),norma,(la,ma,na),alphaa,
-               (xb,yb,zb),normb,alphab,
-               (xc,yc,zc),normc,(lc,mc,nc),alphac,
-               (xd,yd,zd),normd,alphad,M)
-    t1 = time.time()
-    val2 = vrr((xc,yc,zc),normc,(lc,mc,nc),alphac,
-               (xd,yd,zd),normd,alphad,
-               (xa,ya,za),norma,(la,ma,na),alphaa,
-               (xb,yb,zb),normb,alphab,M)
-    t2 = time.time()
-    print "Values:  ",val1,val2
-    print "Timings: ",t1-t0,t2-t1
+    for xa,ya,za,la,ma,na,lc,mc,nc in [(0,0,0, 0,0,0, 0,0,0),
+                                       (0,0,0, 1,0,0, 1,0,0),
+                                       (0,0,0, 0,1,0, 0,1,0),
+                                       (0,0,0, 0,0,1, 0,0,1),
+                                               
+                                       (0,0,0, 2,0,0, 2,0,0),
+                                       (0,0,0, 0,2,0, 0,2,0),
+                                       (0,0,0, 0,0,2, 0,0,2),
+                                               
+                                       (1,2,3, 1,0,0, 1,0,0),
+                                       (1,2,3, 0,1,0, 0,1,0),
+                                       (1,2,3, 0,0,1, 0,0,1),
+                                               
+                                       (1,2,3, 2,0,0, 2,0,0),
+                                       (1,2,3, 0,2,0, 0,2,0),
+                                       (1,2,3, 0,0,2, 0,0,2),
+
+                                       (0,0,0, 1,1,0, 1,1,0),
+                                       (0,0,0, 0,1,1, 0,1,1),
+                                       (0,0,0, 1,0,1, 1,0,1),
+
+                                       (3,2,1, 1,1,0, 1,1,0),
+                                       (3,2,1, 0,1,1, 0,1,1),
+                                       (3,2,1, 1,0,1, 1,0,1),
+                                       ]:
+        print xa,ya,za,la,ma,na,lc,mc,nc
+        t0 = time.time()
+        val1 = vrr((xa,ya,za),norma,(la,ma,na),alphaa,
+                   (xb,yb,zb),normb,alphab,
+                   (xc,yc,zc),normc,(lc,mc,nc),alphac,
+                   (xd,yd,zd),normd,alphad,M)
+        t1 = time.time()
+        val2 = vrr((xc,yc,zc),normc,(lc,mc,nc),alphac,
+                   (xd,yd,zd),normd,alphad,
+                   (xa,ya,za),norma,(la,ma,na),alphaa,
+                   (xb,yb,zb),normb,alphab,M)
+        t2 = time.time()
+        print "Values:  ",val1,val2
+        print "Timings: ",t1-t0,t2-t1
+
     return
 
-test = test_contr
+def test_hrr():
+    import time
+    xa,ya,za = 0.,0.,0.
+    xb,yb,zb = 0.,0.,0.
+    xc,yc,zc = 0.,0.,0.
+    xd,yd,zd = 0.,0.,0.
+    norma = normb = normc = normd = 1.
+    alphaa = alphab = alphac = alphad = 1.
+    lb,mb,nb = 1,0,1
+    ld,md,nd = 1,0,1
+
+    M = 0
+    for xa,ya,za,la,ma,na,lc,mc,nc in [(0,0,0, 0,0,0, 0,0,0),
+                                       (0,0,0, 1,0,0, 1,0,0),
+                                       (0,0,0, 0,1,0, 0,1,0),
+                                       (0,0,0, 0,0,1, 0,0,1),
+                                               
+                                       (0,0,0, 2,0,0, 2,0,0),
+                                       (0,0,0, 0,2,0, 0,2,0),
+                                       (0,0,0, 0,0,2, 0,0,2),
+                                               
+                                       (1,2,3, 1,0,0, 1,0,0),
+                                       (1,2,3, 0,1,0, 0,1,0),
+                                       (1,2,3, 0,0,1, 0,0,1),
+                                               
+                                       (1,2,3, 2,0,0, 2,0,0),
+                                       (1,2,3, 0,2,0, 0,2,0),
+                                       (1,2,3, 0,0,2, 0,0,2),
+
+                                       (0,0,0, 1,1,0, 1,1,0),
+                                       (0,0,0, 0,1,1, 0,1,1),
+                                       (0,0,0, 1,0,1, 1,0,1),
+
+                                       (3,2,1, 1,1,0, 1,1,0),
+                                       (3,2,1, 0,1,1, 0,1,1),
+                                       (3,2,1, 1,0,1, 1,0,1),
+                                       ]:
+        print xa,ya,za,la,ma,na,lc,mc,nc
+        t0 = time.time()
+        val1 = hrr((xa,ya,za),norma,(la,ma,na),alphaa,
+                   (xb,yb,zb),normb,(lb,mb,nb),alphab,
+                   (xc,yc,zc),normc,(lc,mc,nc),alphac,
+                   (xd,yd,zd),normd,(ld,md,nd),alphad)
+        t1 = time.time()
+        val2 = hrr((xc,yc,zc),normc,(lc,mc,nc),alphac,
+                   (xd,yd,zd),normd,(ld,md,nd),alphad,
+                   (xa,ya,za),norma,(la,ma,na),alphaa,
+                   (xb,yb,zb),normb,(lb,mb,nb),alphab)
+        t2 = time.time()
+        print "Values:  ",val1,val2
+        print "Timings: ",t1-t0,t2-t1
+
+    return
 
 if __name__ == '__main__':
     doprofile = 0
@@ -662,5 +738,5 @@ if __name__ == '__main__':
         profdat = pstats.Stats('hgpprof.dat')
         profdat.strip_dirs().sort_stats('time').print_stats(8)
     else:
-        test()
+        test_hrr()
     

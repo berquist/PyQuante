@@ -23,7 +23,8 @@ from Constants import bohr2ang
 
 class Atom:
     def __init__(self,atno,x,y,z,atid=0,fx=0.0,fy=0.0,fz=0.0,vx=0.0,vy=0.0,vz=0.0):
-        self.atno = atno
+        self.atno = int(round(atno))
+        self.Z = atno
         self.r = array([x,y,z],'d')
         #added by Hatem Helal hhh23@cam.ac.uk
         #atom id defaults to zero so as not to break preexisting code...
