@@ -38,11 +38,11 @@ def get2ints(bfs,coul_func):
 
 def coulomb(a,b,c,d,coul_func):
     "Coulomb interaction between 4 contracted Gaussians"
-    Jij = coul_func(a.exps(),a.coefs(),a.pnorms(),a.origin(),a.powers(),
-                    b.exps(),b.coefs(),b.pnorms(),b.origin(),b.powers(),
-                    c.exps(),c.coefs(),c.pnorms(),c.origin(),c.powers(),
-                    d.exps(),d.coefs(),d.pnorms(),d.origin(),d.powers())
-    return a.norm()*b.norm()*c.norm()*d.norm()*Jij
+    Jij = coul_func(a.pexps,a.pcoefs,a.pnorms,a.origin,a.powers,
+                    b.pexps,b.pcoefs,b.pnorms,b.origin,b.powers,
+                    c.pexps,c.pcoefs,c.pnorms,c.origin,c.powers,
+                    d.pexps,d.pcoefs,d.pnorms,d.origin,d.powers)
+    return a.norm*b.norm*c.norm*d.norm*Jij
 
 def maxdiff(a,b):
     md = -1e10
