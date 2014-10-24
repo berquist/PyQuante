@@ -18,26 +18,27 @@ fminNCG     ---      Line-search Newton Conjugate Gradient (uses function, gradi
                      and hessian (if it's provided))
 
 """
-from NumWrap import Numeric,identity,NewAxis
-from NumWrap import MLab
+from NumWrap import Numeric,identity
+#from NumWrap import MLab,NewAxis
 import logging
 
 logger = logging.getLogger("pyquante")
 Num = Numeric
-max = MLab.max
-min = MLab.min
+max = Numeric.max
+min = Numeric.min
 abs = Num.absolute
+NewAxis = None
 
 __version__="0.3.1"
 
 def rosen(x):  # The Rosenbrock function
-    return MLab.sum(100.0*(x[1:]-x[:-1]**2.0)**2.0 + (1-x[:-1])**2.0)
+    return Numeric.sum(100.0*(x[1:]-x[:-1]**2.0)**2.0 + (1-x[:-1])**2.0)
 
 def rosen_der(x):
     xm = x[1:-1]
     xm_m1 = x[:-2]
     xm_p1 = x[2:]
-    der = MLab.zeros(x.shape,x.typecode())
+    der = Numeric.zeros(x.shape,x.typecode())
     der[1:-1] = 200*(xm-xm_m1**2) - 400*(xm_p1 - xm**2)*xm - 2*(1-xm)
     der[0] = -400*x[0]*(x[1]-x[0]**2) - 2*(1-x[0])
     der[-1] = 200*(x[-1]-x[-2]**2)
@@ -343,7 +344,7 @@ def fminBFGS(f, x0, fprime=None, args=(), avegtol=1e-5, maxiter=None, fulloutput
     k = 0
     N = len(x0)
     gtol = N*avegtol
-    #I = MLab.eye(N)
+    #I = Numeric.eye(N)
     I = identity(N,'d')
     Hk = I
 

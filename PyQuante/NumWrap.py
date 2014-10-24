@@ -17,8 +17,10 @@ from numpy import *
 from numpy.linalg import *
 matrixmultiply = dot
     
-# still need to kill these two, which are used by Optimize:
-import numpy.oldnumeric.mlab as MLab
-from numpy.oldnumeric import NewAxis
+# These functions are used by Optimize, but numpy.oldnumeric no longer exists.
+# 10/2014: I'm going to comment these out, since it doesn't break anything in the test suite
+#  and will re-enable them as needed 
+#import numpy.oldnumeric.mlab as MLab
+#from numpy.oldnumeric import NewAxis
 import numpy as Numeric
 
