@@ -1,5 +1,5 @@
 # PyQuante - Python Quantum Chemistry
-[Rick Muller](mailto:rmuller@sandia.gov) v1.5.0
+[Rick Muller](mailto:rmuller@sandia.gov) v1.6.5
 
 ## What is PyQuante?
 [PyQuante](http://pyquante.sourceforge.net/) 
@@ -133,6 +133,8 @@ Contributors
   trying to implement density functionals. 
 
 ## Changelog
+- 1.6.5: 2014-10
+  	* Removed dependence on oldnumeric, which is no longer supported in Numpy
 - 1.6.3: 2010-05
         * Code release with libint functionality
 
