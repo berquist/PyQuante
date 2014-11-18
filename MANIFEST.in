@@ -2,6 +2,10 @@ include Src/*.c
 include Src/*.h
 include Src/lib/*.c
 include Src/lib/*.h
+include Src/lib/utils/*.c
+include Src/lib/utils/*.h
+include Src/PyQuante/*
+include Src/tools/tests_template/*.c
 include Doc/*.html
 include Tests/*.py
 include MANIFEST.in setup.cfg README LICENSE

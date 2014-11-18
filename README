@@ -28,28 +28,40 @@ information, including links to the download page, is available at
 Here is an example of what closed-shell Hartree-Fock scripts look
 like:
 
-def rhf(atoms,**opts):
-    	"General wrapper for restricted closed-shell hartree fock"
-    	ConvCriteria = opts.get('ConvCriteria',1e-5)
-    	MaxIter = opts.get('MaxIter',20)
-    	basis = opts.get('basis',None)
-    	bfs = getbasis(atoms,basis)
-    	S,h,Ints = getints(bfs,atoms)
-    	orbs = get_guess(h,S)
-    	nel = atoms.get_nel()
-    	enuke = atoms.get_enuke()
-    	nclosed,nopen = divmod(nel,2)
-    	eold = 0.
-    	for i in range(MaxIter):
-        	D = mkdens(evecs,0,nocc)
-        	G = get2JmK(Ints,D)
-        	F = h+G
-        	evals,evecs = GHeigenvectors(F,S)
-        	energy = get_energy(h,F,D,enuke)
-        	print energy
-        	if abs(energy-eold) < ConvCriteria: break
-        	eold = energy
-    	return energy
+    from PyQuante import Molecule
+    from PyQuante.Ints import getbasis, getints, get2JmK
+    from PyQuante.hartree_fock import get_guess, get_energy
+    from PyQuante.LA2 import mkdens, geigh
+    
+    h2 = Molecule('H2',
+                     [(1,  (0.00000000,     0.00000000,     0.36628549)),
+                      (1,  (0.00000000,     0.00000000,    -0.36628549))],
+                     units='Angstrom')
+
+    def rhf(atoms,**opts):
+            "General wrapper for restricted closed-shell hartree fock"
+            ConvCriteria = opts.get('ConvCriteria',1e-6)
+            MaxIter = opts.get('MaxIter',20)
+            basis = opts.get('basis',None)
+            bfs = getbasis(atoms,basis)
+            S,h,Ints = getints(bfs,atoms)
+            orbs = get_guess(h,S)
+            nel = atoms.get_nel()
+            enuke = atoms.get_enuke()
+            nclosed,nopen = divmod(nel,2)
+            eold = 0.
+            for i in range(MaxIter):
+                    D = mkdens(orbs,0,nel/2)
+                    G = get2JmK(Ints,D)
+                    F = h+G
+                    evals,orbs = geigh(F,S)
+                    energy = get_energy(h,F,D,enuke)
+                    print energy
+                    if abs(energy-eold) < ConvCriteria: break
+                    eold = energy
+            return energy
+    
+    rhf(h2)
 
 Even without knowing any Python, it is easy to see what the various 
 steps in the program are doing.

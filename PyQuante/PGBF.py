@@ -181,14 +181,15 @@ class PGBF(PrimitiveGTO):
         
 
 # Friend functions
-#def coulomb(gA,gB,gC,gD):
-#    """Coulomb interaction between four cartesian Gaussians; THO eq. 2.22"""
-#    return coulomb_repulsion(gA.origin,gA.norm,gA.powers,
-#                             gA.exp,gB.origin,gB.norm,
-#                             gB.powers,gB.exp,gC.origin,
-#                             gC.norm,gC.powers,gC.exp,
-#                             gD.origin,gD.norm,gD.powers,
-#                             gD.exp)
+def coulomb(gA,gB,gC,gD):
+    """Coulomb interaction between four cartesian Gaussians; THO eq. 2.22"""
+    from PyQuante.cints import coulomb_repulsion
+    return coulomb_repulsion(gA.origin,gA.norm,gA.powers,
+                             gA.exp,gB.origin,gB.norm,
+                             gB.powers,gB.exp,gC.origin,
+                             gC.norm,gC.powers,gC.exp,
+                             gD.origin,gD.norm,gD.powers,
+                             gD.exp)
 
 def three_center(gA,gB,gC):
     "Three-center integral between Gaussians"

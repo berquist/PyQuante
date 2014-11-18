@@ -105,7 +105,7 @@ if enable_libint:
 
 
 setup(name="PyQuante",
-      version="1.6.6",
+      version="1.6.5",
       description = doclines[0],
       author = "Rick Muller",
       author_email = "rmuller@sandia.gov",
