@@ -59,6 +59,10 @@ class PGBF(PrimitiveGTO):
 
     # Public
     def reset_powers(self,px,py,pz):
+        # Addition of the Cython PrimitiveGTO function killed the ability to do
+        # normalization, which means that resetting the powers is no longer
+        # reliable, and should be replaced with simply creating a new function.
+        raise Exception("Warning: reset powers no longer reliable")
         self.powers = (px,py,pz)
         return
 
