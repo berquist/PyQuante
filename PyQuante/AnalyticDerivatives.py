@@ -77,39 +77,33 @@ def der_kinetic_integral(a,bfi,bfj):
                                 
                 #x component
                 v = PGBF(alpha,origin,(l+1,m,n))
-                #v.normalize()
                 
                 terma = sqrt(alpha*(2.0*l+1.0))*coefs*v.kinetic(upbf)
                 
                 if l>0:
-                    v.reset_powers(l-1,m,n)
-                    #v.normalize()
+                    v = PGBF(alpha,origin,(l-1,m,n))
                     termb = -2*l*sqrt(alpha/(2.0*l-1.0))*coefs*v.kinetic(upbf)
                 else: termb = 0.0
                 
                 dTij_dXa += terma + termb
 
                 #y component
-                v.reset_powers(l,m+1,n)
-                #v.normalize()
+                v = PGBF(alpha,origin,(l,m+1,n))
                 terma = sqrt(alpha*(2.0*m+1.0))*coefs*v.kinetic(upbf)
                 
                 if m>0:
-                    v.reset_powers(l,m-1,n)
-                    #v.normalize()
+                    v = PGBF(alpha,origin,(l,m-1,n))
                     termb = -2*m*sqrt(alpha/(2.0*m-1.0))*coefs*v.kinetic(upbf)
                 else: termb = 0.0
                 
                 dTij_dYa += terma + termb
                 
                 #z component
-                v.reset_powers(l,m,n+1)
-                #v.normalize()
+                v = PGBF(alpha,origin,(l,m,n+1))
                 terma = sqrt(alpha*(2.0*n+1.0))*coefs*v.kinetic(upbf)
                 
                 if n>0:
-                    v.reset_powers(l,m,n-1)
-                    #v.normalize()
+                    v = PGBF(alpha,origin,(l,m,n-1))
                     termb = -2*n*sqrt(alpha/(2.0*n-1.0))*coefs*v.kinetic(upbf)
                 else: termb = 0.0
                 
@@ -127,39 +121,33 @@ def der_kinetic_integral(a,bfi,bfj):
                                 
                 #x component
                 v = PGBF(alpha,origin,(l+1,m,n))
-                #v.normalize()
                 
                 terma = sqrt(alpha*(2.0*l+1.0))*coefs*v.kinetic(upbf)
                 
                 if l>0:
-                    v.reset_powers(l-1,m,n)
-                    #v.normalize()
+                    v = PGBF(alpha,origin,(l-1,m,n))
                     termb = -2*l*sqrt(alpha/(2.0*l-1.0))*coefs*v.kinetic(upbf)
                 else: termb = 0.0
                 
                 dTij_dXa += terma + termb
                 
                 #y component
-                v.reset_powers(l,m+1,n)
-                #v.normalize()
+                v = PGBF(alpha,origin,(l,m+1,n))
                 terma = sqrt(alpha*(2.0*m+1.0))*coefs*v.kinetic(upbf)
                 
                 if m>0:
-                    v.reset_powers(l,m-1,n)
-                    #v.normalize()
+                    v = PGBF(alpha,origin,(l,m-1,n))
                     termb = -2*m*sqrt(alpha/(2.0*m-1.0))*coefs*v.kinetic(upbf)
                 else: termb = 0.0
                 
                 dTij_dYa += terma + termb
                 
                 #z component
-                v.reset_powers(l,m,n+1)
-                #v.normalize()
+                v = PGBF(alpha,origin,(l,m,n+1))
                 terma = sqrt(alpha*(2.0*n+1.0))*coefs*v.kinetic(upbf)
                 
                 if n>0:
-                    v.reset_powers(l,m,n-1)
-                    #v.normalize()
+                    v = PGBF(alpha,origin,(l,m,n-1))
                     termb = -2*n*sqrt(alpha/(2.0*n-1.0))*coefs*v.kinetic(upbf)
                 else: termb = 0.0
                 
@@ -190,10 +178,173 @@ def der_nuc_att(a,bfi,bfj,atoms):
                                 
                 #x component
                 v = PGBF(alpha,origin,(l+1,m,n))
-                #v.normalize()
                 
                 terma=0.0
-                for atom in atoms:                    
+                for atom in atoms:   
+                    if atom.atid != a:
+                        terma += atom.atno*sqrt(alpha*(2.0*l+1.0))*coefs*v.nuclear(upbf,atom.pos())
+                
+                if l>0:
+                    v = PGBF(alpha,origin,(l-1,m,n))
+                    
+                    termb=0.0
+                    for atom in atoms:
+                        if atom.atid != a:
+                            termb += -2*l*atom.atno*sqrt(alpha/(2.0*l-1.0))*coefs*v.nuclear(upbf,atom.pos())
+                        
+                else: termb = 0.0
+                
+                dVij_dXa += terma + termb
+                
+                
+                #y component
+                v = PGBF(alpha,origin,(l,m+1,n))
+
+                terma=0.0
+                for atom in atoms:
+                    if atom.atid != a:
+                        terma += atom.atno*sqrt(alpha*(2.0*m+1.0))*coefs*v.nuclear(upbf,atom.pos())
+                
+                if m>0:
+                    v = PGBF(alpha,origin,(l,m-1,n))
+                    
+                    termb=0.0
+                    for atom in atoms:
+                        if atom.atid != a:
+                            termb += -2*m*atom.atno*sqrt(alpha/(2.0*m-1.0))*coefs*v.nuclear(upbf,atom.pos())
+                else: termb = 0.0
+                
+                dVij_dYa += terma + termb
+                
+                #z component
+                v = PGBF(alpha,origin,(l,m,n+1))
+                
+                terma=0.0
+                for atom in atoms:
+                    if atom.atid != a:
+                        terma += atom.atno*sqrt(alpha*(2.0*n+1.0))*coefs*v.nuclear(upbf,atom.pos())
+                
+                if n>0:
+                    v = PGBF(alpha,origin,(l,m,n-1))
+                    
+                    termb=0.0
+                    for atom in atoms:
+                        if atom.atid != a:
+                            termb += -2*n*atom.atno*sqrt(alpha/(2.0*n-1.0))*coefs*v.nuclear(upbf,atom.pos())
+                else: termb = 0.0
+                
+                dVij_dZa += terma + termb
+
+                
+    #bfj is centered on atom a
+    if bfj.atid==a:
+        for upbf in bfi.prims:
+            for vpbf in bfj.prims:
+                alpha = vpbf.exp
+                l,m,n = vpbf.powers
+                origin = vpbf.origin
+                coefs = upbf.coef*vpbf.coef
+                
+                #x component 
+                v = PGBF(alpha,origin,(l+1,m,n))
+                
+                terma=0.0
+                for atom in atoms:
+                    if atom.atid != a:
+                        terma += atom.atno*sqrt(alpha*(2.0*l+1.0))*coefs*v.nuclear(upbf,atom.pos())
+                
+                if l>0:
+                    v = PGBF(alpha,origin,(l-1,m,n))
+                    
+                    termb=0.0
+                    for atom in atoms:
+                        if atom.atid != a:
+                            termb += -2*l*atom.atno*sqrt(alpha/(2.0*l-1.0))*coefs*v.nuclear(upbf,atom.pos())
+                else: termb = 0.0
+                
+                dVij_dXa += terma + termb
+                
+
+                #y component
+                v = PGBF(alpha,origin,(l,m+1,n))
+
+                terma=0.0
+                for atom in atoms:
+                    if atom.atid != a:
+                        terma += atom.atno*sqrt(alpha*(2.0*m+1.0))*coefs*v.nuclear(upbf,atom.pos())
+                
+                if m>0:
+                    v = PGBF(alpha,origin,(l,m-1,n))
+                    
+                    termb=0.0
+                    for atom in atoms:
+                        if atom.atid != a:
+                            termb += -2*m*atom.atno*sqrt(alpha/(2.0*m-1.0))*coefs*v.nuclear(upbf,atom.pos())
+                else: termb = 0.0
+                
+                dVij_dYa += terma + termb
+                
+                #z component
+                v = PGBF(alpha,origin,(l,m,n+1))
+                
+                terma=0.0
+                for atom in atoms:
+                    if atom.atid != a:
+                        terma += atom.atno*sqrt(alpha*(2.0*n+1.0))*coefs*v.nuclear(upbf,atom.pos())
+                
+                if n>0:
+                    v = PGBF(alpha,origin,(l,m,n-1))
+                    
+                    termb = 0.0
+                    for atom in atoms:
+                        if atom.atid != a:
+                            termb += -2*n*atom.atno*sqrt(alpha/(2.0*n-1.0))*coefs*v.nuclear(upbf,atom.pos())
+                else: termb = 0.0
+                
+                dVij_dZa += terma + termb
+    
+    #finally evaluate grad<i| Vatom |j>
+    for atom in atoms:
+        if atom.atid==a:
+            for upbf in bfi.prims:
+                for vpbf in bfj.prims:
+                    prefactor = upbf.coef*vpbf.coef*atom.atno
+                    #list = upbf.nuclear_gradient(bfi.atid,bfj.atid,atom.atid,vpbf,atom.pos())
+                    l = upbf.nuclear_gradient(vpbf,atom.pos())
+                    
+                    dVij_dXa+=prefactor*l[0]
+                    dVij_dYa+=prefactor*l[1]
+                    dVij_dZa+=prefactor*l[2]
+        
+
+    return dVij_dXa,dVij_dYa,dVij_dZa
+
+def der_nuc_att_old(a,bfi,bfj,atoms):
+    """
+    This function finds the atomic gradient of the nuclear attraction integrals. Since the
+    nuclear attraction operator explicitly depends on the atomic coordinates we find 
+    
+    grad <i|V|j> = <grad i|V|j> + <i|V|grad j> + <i| grad V |j>
+    
+    The first two terms are straightforward to evaluate using the recursion relation for the
+    derivative of a Gaussian basis function.  The last term found through the nuclear_gradient
+    function in the primitive Gaussian class.  
+    """
+    
+    dVij_dXa,dVij_dYa,dVij_dZa = 0.0,0.0,0.0
+    if bfi.atid==a: #bfi is centered on atom a
+        for upbf in bfj.prims:
+            for vpbf in bfi.prims:
+                alpha = vpbf.exp
+                l,m,n = vpbf.powers
+                origin = vpbf.origin
+                coefs  = upbf.coef*vpbf.coef
+                                
+                #x component
+                v = PGBF(alpha,origin,(l+1,m,n))
+                
+                terma=0.0
+                for atom in atoms:
                     terma += atom.atno*sqrt(alpha*(2.0*l+1.0))*coefs*v.nuclear(upbf,atom.pos())
                 
                 if l>0:
@@ -362,13 +513,11 @@ def der_overlap_element(a,bfi, bfj):
                                 
                 #x component
                 v = PGBF(alpha,origin,(l+1,m,n))
-                #v.normalize()
                 
                 terma = sqrt(alpha*(2.0*l+1.0))*coefs*v.overlap(upbf)
                 
                 if l>0:
-                    v.reset_powers(l-1,m,n)
-                    #v.normalize()
+                    v = PGBF(alpha,origin,(l-1,m,n))
                     termb = -2*l*sqrt(alpha/(2.0*l-1.0))*coefs*v.overlap(upbf)
                 else: termb = 0.0
                 
@@ -376,26 +525,22 @@ def der_overlap_element(a,bfi, bfj):
                 
                 
                 #y component
-                v.reset_powers(l,m+1,n)
-                #v.normalize()
+                v = PGBF(alpha,origin,(l,m+1,n))
                 terma = sqrt(alpha*(2.0*m+1.0))*coefs*v.overlap(upbf)
                 
                 if m>0:
-                    v.reset_powers(l,m-1,n)
-                    #v.normalize()
+                    v = PGBF(alpha,origin,(l,m-1,n))
                     termb = -2*m*sqrt(alpha/(2.0*m-1.0))*coefs*v.overlap(upbf)
                 else: termb = 0.0
                 
                 dSij_dYa += terma + termb
                 
                 #z component
-                v.reset_powers(l,m,n+1)
-                #v.normalize()
+                v = PGBF(alpha,origin,(l,m,n+1))
                 terma = sqrt(alpha*(2.0*n+1.0))*coefs*v.overlap(upbf)
                 
                 if n>0:
-                    v.reset_powers(l,m,n-1)
-                    #v.normalize()
+                    v = PGBF(alpha,origin,(l,m,n-1))
                     termb = -2*n*sqrt(alpha/(2.0*n-1.0))*coefs*v.overlap(upbf)
                 else: termb = 0.0
                 
@@ -413,13 +558,11 @@ def der_overlap_element(a,bfi, bfj):
                 
                 #x component 
                 v = PGBF(alpha,origin,(l+1,m,n))
-                #v.normalize()
                 
                 terma = sqrt(alpha*(2.0*l+1.0))*coefs*v.overlap(upbf)
                 
                 if l>0:
-                    v.reset_powers(l-1,m,n)
-                    #v.normalize()
+                    v = PGBF(alpha,origin,(l-1,m,n))
                     termb = -2*l*sqrt(alpha/(2.0*l-1.0))*coefs*v.overlap(upbf)
                 else: termb = 0.0
                 
@@ -427,26 +570,22 @@ def der_overlap_element(a,bfi, bfj):
                 
 
                 #y component
-                v.reset_powers(l,m+1,n)
-                #v.normalize()
+                v = PGBF(alpha,origin,(l,m+1,n))
                 terma = sqrt(alpha*(2.0*m+1.0))*coefs*v.overlap(upbf)
                 
                 if m>0:
-                    v.reset_powers(l,m-1,n)
-                    #v.normalize()
+                    v = PGBF(alpha,origin,(l,m-1,n))
                     termb = -2*m*sqrt(alpha/(2.0*m-1.0))*coefs*v.overlap(upbf)
                 else: termb = 0.0
                 
                 dSij_dYa += terma + termb
                 
                 #z component
-                v.reset_powers(l,m,n+1)
-                #v.normalize()
+                v = PGBF(alpha,origin,(l,m,n+1))
                 terma = sqrt(alpha*(2.0*n+1.0))*coefs*v.overlap(upbf)
                 
                 if n>0:
-                    v.reset_powers(l,m,n-1)
-                    #v.normalize()
+                    v = PGBF(alpha,origin,(l,m,n-1))
                     termb = -2*n*sqrt(alpha/(2.0*n-1.0))*coefs*v.overlap(upbf)
                 else: termb = 0.0
                 
@@ -475,41 +614,35 @@ def der_Jints(a, bfi,bfj,bfk,bfl):
                         
                         #x component
                         tmp = PGBF(alpha, origin,(l+1,m,n)) #temp pgbf
-                        #tmp.normalize()
                         
                         terma = sqrt(alpha*(2.0*l+1.0))*coefs*coulomb(tmp,upbf,vpbf,wpbf)
                         
                         if l>0:
-                            tmp.reset_powers(l-1,m,n)
-                            #tmp.normalize()
+                            tmp = PGBF(alpha,origin,(l-1,m,n))
                             termb = -2*l*sqrt(alpha/(2.*l-1))*coefs*coulomb(tmp,upbf,vpbf,wpbf)
                         else: termb = 0.0
                         
                         dJint_dXa += terma+termb
                         
                         #y component
-                        tmp.reset_powers(l,m+1,n)
-                        #tmp.normalize()
+                        tmp = PGBF(alpha,origin,(l,m+1,n))
                         
                         terma = sqrt(alpha*(2.0*m+1.0))*coefs*coulomb(tmp,upbf,vpbf,wpbf)
                         
                         if m>0:
-                            tmp.reset_powers(l,m-1,n)
-                            #tmp.normalize()
+                            tmp = PGBF(alpha,origin,(l,m-1,n))
                             termb = -2*m*sqrt(alpha/(2.*m-1))*coefs*coulomb(tmp,upbf,vpbf,wpbf)
                         else: termb=0.0
                         
                         dJint_dYa += terma + termb
 
                         #z component
-                        tmp.reset_powers(l,m,n+1)
-                        #tmp.normalize()
+                        tmp = PGBF(alpha,origin,(l,m,n+1))
                         
                         terma = sqrt(alpha*(2.0*n+1.0))*coefs*coulomb(tmp,upbf,vpbf,wpbf)
                         
                         if n>0:
-                            tmp.reset_powers(l,m,n-1)
-                            #tmp.normalize()
+                            tmp = PGBF(alpha,origin,(l,m,n-1))
                             termb = -2*n*sqrt(alpha/(2.*n-1))*coefs*coulomb(tmp,upbf,vpbf,wpbf)
                         else: termb=0.0
                         
@@ -527,41 +660,35 @@ def der_Jints(a, bfi,bfj,bfk,bfl):
                         
                         #x component
                         tmp = PGBF(alpha, origin,(l+1,m,n)) #temp pgbf
-                        #tmp.normalize()
                         
                         terma = sqrt(alpha*(2.0*l+1.0))*coefs*coulomb(tpbf,tmp,vpbf,wpbf)
                         
                         if l>0:
-                            tmp.reset_powers(l-1,m,n)
-                            #tmp.normalize()
+                            tmp = PGBF(alpha,origin,(l-1,m,n))
                             termb = -2*l*sqrt(alpha/(2.*l-1))*coefs*coulomb(tpbf,tmp,vpbf,wpbf)
                         else: termb = 0.0
                         
                         dJint_dXa += terma+termb
                         
                         #y component
-                        tmp.reset_powers(l,m+1,n)
-                        #tmp.normalize()
+                        tmp = PGBF(alpha,origin,(l,m+1,n))
                         
                         terma = sqrt(alpha*(2.0*m+1.0))*coefs*coulomb(tpbf,tmp,vpbf,wpbf)
                         
                         if m>0:
-                            tmp.reset_powers(l,m-1,n)
-                            #tmp.normalize()
+                            tmp = PGBF(alpha,origin,(l,m-1,n))
                             termb = -2*m*sqrt(alpha/(2.*m-1))*coefs*coulomb(tpbf,tmp,vpbf,wpbf)
                         else: termb=0.0
                         
                         dJint_dYa += terma + termb
 
                         #z component
-                        tmp.reset_powers(l,m,n+1)
-                        #tmp.normalize()
+                        tmp = PGBF(alpha,origin,(l,m,n+1))
                         
                         terma = sqrt(alpha*(2.0*n+1.0))*coefs*coulomb(tpbf,tmp,vpbf,wpbf)
                         
                         if n>0:
-                            tmp.reset_powers(l,m,n-1)
-                            #tmp.normalize()
+                            tmp = PGBF(alpha,origin,(l,m,n-1))
                             termb = -2*n*sqrt(alpha/(2.*n-1))*coefs*coulomb(tpbf,tmp,vpbf,wpbf)
                         else: termb=0.0
                         
@@ -579,41 +706,35 @@ def der_Jints(a, bfi,bfj,bfk,bfl):
                         
                         #x component
                         tmp = PGBF(alpha, origin,(l+1,m,n)) #temp pgbf
-                        #tmp.normalize()
                         
                         terma = sqrt(alpha*(2.0*l+1.0))*coefs*coulomb(tpbf,upbf,tmp,wpbf)
                         
                         if l>0:
-                            tmp.reset_powers(l-1,m,n)
-                            #tmp.normalize()
+                            tmp = PGBF(alpha,origin,(l-1,m,n))
                             termb = -2*l*sqrt(alpha/(2.*l-1))*coefs*coulomb(tpbf,upbf,tmp,wpbf)
                         else: termb = 0.0
                         
                         dJint_dXa += terma+termb
                         
                         #y component
-                        tmp.reset_powers(l,m+1,n)
-                        #tmp.normalize()
+                        tmp = PGBF(alpha,origin,(l,m+1,n))
                         
                         terma = sqrt(alpha*(2.0*m+1.0))*coefs*coulomb(tpbf,upbf,tmp,wpbf)
                         
                         if m>0:
-                            tmp.reset_powers(l,m-1,n)
-                            #tmp.normalize()
+                            tmp = PGBF(alpha,origin,(l,m-1,n))
                             termb = -2*m*sqrt(alpha/(2.*m-1))*coefs*coulomb(tpbf,upbf,tmp,wpbf)
                         else: termb=0.0
                         
                         dJint_dYa += terma + termb
 
                         #z component
-                        tmp.reset_powers(l,m,n+1)
-                        #tmp.normalize()
+                        tmp = PGBF(alpha,origin,(l,m,n+1))
                         
                         terma = sqrt(alpha*(2.0*n+1.0))*coefs*coulomb(tpbf,upbf,tmp,wpbf)
                         
                         if n>0:
-                            tmp.reset_powers(l,m,n-1)
-                            #tmp.normalize()
+                            tmp = PGBF(alpha,origin,(l,m,n-1))
                             termb = -2*n*sqrt(alpha/(2.*n-1))*coefs*coulomb(tpbf,upbf,tmp,wpbf)
                         else: termb=0.0
                         
@@ -631,41 +752,35 @@ def der_Jints(a, bfi,bfj,bfk,bfl):
                         
                         #x component
                         tmp = PGBF(alpha, origin,(l+1,m,n)) #temp pgbf
-                        #tmp.normalize()
                         
                         terma = sqrt(alpha*(2.0*l+1.0))*coefs*coulomb(tpbf,upbf,vpbf,tmp)
                         
                         if l>0:
-                            tmp.reset_powers(l-1,m,n)
-                            #tmp.normalize()
+                            tmp = PGBF(alpha,origin,(l-1,m,n))
                             termb = -2*l*sqrt(alpha/(2.*l-1))*coefs*coulomb(tpbf,upbf,vpbf,tmp)
                         else: termb = 0.0
                         
                         dJint_dXa += terma+termb
                         
                         #y component
-                        tmp.reset_powers(l,m+1,n)
-                        #tmp.normalize()
+                        tmp = PGBF(alpha,origin,(l,m+1,n))
                         
                         terma = sqrt(alpha*(2.0*m+1.0))*coefs*coulomb(tpbf,upbf,vpbf,tmp)
                         
                         if m>0:
-                            tmp.reset_powers(l,m-1,n)
-                            #tmp.normalize()
+                            tmp = PGBF(alpha,origin,(l,m-1,n))
                             termb = -2*m*sqrt(alpha/(2.*m-1))*coefs*coulomb(tpbf,upbf,vpbf,tmp)
                         else: termb=0.0
                         
                         dJint_dYa += terma + termb
 
                         #z component
-                        tmp.reset_powers(l,m,n+1)
-                        #tmp.normalize()
+                        tmp = PGBF(alpha,origin,(l,m,n+1))
                         
                         terma = sqrt(alpha*(2.0*n+1.0))*coefs*coulomb(tpbf,upbf,vpbf,tmp)
                         
                         if n>0:
-                            tmp.reset_powers(l,m,n-1)
-                            #tmp.normalize()
+                            tmp = PGBF(alpha,origin,(l,m,n-1))
                             termb = -2*n*sqrt(alpha/(2.*n-1))*coefs*coulomb(tpbf,upbf,vpbf,tmp)
                         else: termb=0.0
                         
