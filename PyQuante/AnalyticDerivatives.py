@@ -309,8 +309,8 @@ def der_nuc_att(a,bfi,bfj,atoms):
             for upbf in bfi.prims:
                 for vpbf in bfj.prims:
                     prefactor = upbf.coef*vpbf.coef*atom.atno
-                    #list = upbf.nuclear_gradient(bfi.atid,bfj.atid,atom.atid,vpbf,atom.pos())
-                    l = upbf.nuclear_gradient(vpbf,atom.pos())
+                    l = upbf.nuclear_gradient(bfi.atid,bfj.atid,atom.atid,vpbf,atom.pos())
+                    #l = upbf.nuclear_gradient(vpbf,atom.pos())
                     
                     dVij_dXa+=prefactor*l[0]
                     dVij_dYa+=prefactor*l[1]

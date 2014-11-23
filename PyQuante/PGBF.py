@@ -39,7 +39,7 @@ from PyQuante.cints import binomial, three_center_1D
 #from PyQuante.Defaults import coulomb_repulsion
 
 #added 2/8/07 by Hatem Helal hhh23@cam.ac.uk
-#probably need to write the C version in cints...
+#probably need to write the C version of grad_nuc_att in cints...
 from PyQuante.pyints import grad_nuc_att
 from primitive_gto import PrimitiveGTO
 
@@ -99,9 +99,9 @@ class PGBF(PrimitiveGTO):
                                   other.powers,other.exp,
                                   C)
 
-    def nuclear_gradient(self,other,C):
+    def nuclear_gradient(self,ia,ib,ic,other,C):
         return self.norm*other.norm*\
-               array(grad_nuc_att(self.origin,self.powers,self.exp,
+               array(grad_nuc_att(ia,ib,ic,self.origin,self.powers,self.exp,
                             other.origin,other.powers,other.exp,
                             C))
 

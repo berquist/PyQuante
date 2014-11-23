@@ -45,7 +45,7 @@ def dist(A,B): return sqrt(dist2(A,B))
 def binomial_prefactor(s,ia,ib,xpa,xpb):
     "From Augspurger and Dykstra"
     sum = 0
-    for t in xrange(s+1):
+    for t in range(s+1):
         if s-ia <= t <= ib:
             sum = sum + binomial(ia,s-t)*binomial(ib,t)* \
                   pow(xpa,ia-s+t)*pow(xpb,ib-t)
@@ -71,7 +71,7 @@ def gammln(x):
     tmp=x+5.5
     tmp = tmp - (x+0.5)*log(tmp)
     ser=1.000000000190015 # don't you just love these numbers?!
-    for j in xrange(6):
+    for j in range(6):
         y = y+1
         ser = ser+cof[j]/y
     return -tmp+log(2.5066282746310005*ser/x);
@@ -103,7 +103,7 @@ def _gser(a,x):
 
     ap = a
     delt = sum = 1./a
-    for i in xrange(ITMAX):
+    for i in range(ITMAX):
         ap=ap+1.
         delt=delt*x/ap
         sum=sum+delt
@@ -124,7 +124,7 @@ def _gcf(a,x):
     c=1./FPMIN
     d=1./b
     h=d
-    for i in xrange(1,ITMAX+1):
+    for i in range(1,ITMAX+1):
         an=-i*(i-a)
         b=b+2.
         d=an*d+b
@@ -196,9 +196,9 @@ def overlap(alpha1,(l1,m1,n1),A,alpha2,(l2,m2,n2),B):
 
 def multipole_ints((kx,ky,kz),alpha1,(l1,m1,n1),A1,alpha2,(l2,m2,n2),A2):
     total = 0
-    for ix in xrange(kx+1):
-        for iy in xrange(ky+1):
-            for iz in xrange(kz+1):
+    for ix in range(kx+1):
+        for iy in range(ky+1):
+            for iz in range(kz+1):
                 total += binomial(kx,ix)*binomial(ky,iy)*binomial(kz,iz)*\
                          A1[0]**(kx-ix)*A1[1]**(ky-iy)*A1[2]**(kz-iz)*\
                          overlap(alpha1,(l1+ix,m1+iy,n1+iz),A1,
@@ -208,7 +208,7 @@ def multipole_ints((kx,ky,kz),alpha1,(l1,m1,n1),A1,alpha2,(l2,m2,n2),A2):
 def overlap_1D(l1,l2,PAx,PBx,gamma):
     "Taken from THO eq. 2.12"
     sum = 0
-    for i in xrange(1+int(floor(0.5*(l1+l2)))):
+    for i in range(1+int(floor(0.5*(l1+l2)))):
         sum = sum + binomial_prefactor(2*i,l1,l2,PAx,PBx)* \
               fact2(2*i-1)/pow(2*gamma,i)
     return sum
@@ -235,9 +235,9 @@ def nuclear_attraction((x1,y1,z1),norm1,(l1,m1,n1),alpha1,
         Az = A_array(n1,n2,zp-z1,zp-z2,zp-z3,gamma)
 
         sum = 0.
-        for I in xrange(l1+l2+1):
-            for J in xrange(m1+m2+1):
-                for K in xrange(n1+n2+1):
+        for I in range(l1+l2+1):
+            for J in range(m1+m2+1):
+                for K in range(n1+n2+1):
                     sum = sum + Ax[I]*Ay[J]*Az[K]*Fgamma(I+J+K,rcp2*gamma)
 
         return -norm1*norm2*\
@@ -253,26 +253,83 @@ def A_array(l1,l2,PA,PB,CP,g):
     "THO eq. 2.18 and 3.1"
     Imax = l1+l2+1
     A = [0]*Imax
-    for i in xrange(Imax):
-        for r in xrange(int(floor(i/2)+1)):
-            for u in xrange(int(floor((i-2*r)/2)+1)):
+    for i in range(Imax):
+        for r in range(int(floor(i/2)+1)):
+            for u in range(int(floor((i-2*r)/2)+1)):
                 I = i-2*r-u
                 A[I] = A[I] + A_term(i,r,u,l1,l2,PA,PB,CP,g)
     return A
 
-def grad_A_array(l1,l2,PA,PB,CP,g):
+def grad_A_array(ia,ib,ic,alpha1,alpha2,l1,l2,PA,PB,CP,g):
     "several pages of algebra were necessary to find this result..."
     Imax = l1+l2+1
     A = [0]*Imax
-    for i in xrange(Imax):
-        for r in xrange(int(floor(i/2)+1)):
-            for u in xrange(int(floor((i-2*r)/2.)+1)):
+    for i in range(Imax):
+        for r in range(int(floor(i/2)+1)):
+            for u in range(int(floor((i-2*r)/2.)+1)):
                 I = i-2*r-u
-                A[I] = A[I] + (i-2.*r+1.)/(i-2.*r-2.*u+1.)*CP*A_term(i,r,u,l1,l2,PA,PB,CP,g)
+                A[I] = A[I] + Deriv_A_term(ia,ib,ic,alpha1,alpha2,i,r,u,l1,l2,PA,PB,CP,g)
     return A
-               
+ 
+def Deriv_A_term(ia,ib,ic,alpha1,alpha2,i,r,u,l1,l2,PAx,PBx,CPx,gamma):
+    dPdC = get_dPdC(ia,ib,ic,alpha1,alpha2)
 
-def grad_nuc_att((x1,y1,z1),(l1,m1,n1),alpha1,
+    if (i-2*r-2*u==0):
+        DAterm = 0.
+    else:    
+        DAterm = pow(-1,i)*binomial_prefactor(i,l1,l2,PAx,PBx)*\
+                 pow(-1,u)*fact(i)*(i-2*r-2*u)*pow(CPx,i-2*r-2*u-1)*(dPdC-1.)*\
+                 pow(0.25/gamma,r+u)/fact(r)/fact(u)/fact(i-2*r-2*u)
+
+
+    DAterm += pow(-1,i)*deriv_binomial_prefactor(ia,ib,ic,alpha1,alpha2,i,l1,l2,PAx,PBx)*\
+              pow(-1,u)*fact(i)*pow(CPx,i-2*r-2*u)*\
+              pow(0.25/gamma,r+u)/fact(r)/fact(u)/fact(i-2*r-2*u)
+
+    return DAterm
+              
+
+def deriv_binomial_prefactor(a,b,c,alpha1,alpha2,s,ia,ib,xpa,xpb):
+    "From Augspurger and Dykstra"
+    sum = 0
+    for t in range(s+1):
+        if s-ia <= t <= ib:
+            if (ia-s+t > 0):
+                sum = sum + binomial(ia,s-t)*binomial(ib,t)* \
+                      (ia-s+t)*pow(xpa,ia-s+t-1)*pow(xpb,ib-t)*dXPAdXC(a,b,c,alpha1,alpha2)
+            if (ib-t > 0):    
+                sum = sum + binomial(ia,s-t)*binomial(ib,t)* \
+                      pow(xpa,ia-s+t)*(ib-t)*pow(xpb,ib-t-1)*dXPBdXC(a,b,c,alpha1,alpha2)
+
+    return sum
+
+
+def dXPAdXC(ia,ib,ic,alpha1,alpha2):
+    if ia==ic and ib==ic:
+        dXPAdXC = 0.0
+    elif ia==ic and ib!=ic:
+        dXPAdXC = alpha1/(alpha1+alpha2) - 1 
+    elif ia!=ic and ib==ic:
+        dXPAdXC = alpha2/(alpha1+alpha2)
+    elif ia!=ic and ib!=ic:
+        dXPAdXC = 0.0
+    return dXPAdXC
+
+
+def dXPBdXC(ia,ib,ic,alpha1,alpha2):
+    if ia==ic and ib==ic:
+        dXPBdXC = 0.0
+    elif ia==ic and ib!=ic:
+        dXPBdXC = alpha1/(alpha1+alpha2) 
+    elif ia!=ic and ib==ic:
+        dXPBdXC = alpha2/(alpha1+alpha2) - 1
+    elif ia!=ic and ib!=ic:
+        dXPBdXC = 0.0
+    return dXPBdXC
+
+
+def grad_nuc_att(ia,ib,ic,
+                 (x1,y1,z1),(l1,m1,n1),alpha1,
                  (x2,y2,z2),(l2,m2,n2),alpha2,
                  (x3,y3,z3)):
                  
@@ -286,37 +343,96 @@ def grad_nuc_att((x1,y1,z1),(l1,m1,n1),alpha1,
     Ay = A_array(m1,m2,yp-y1,yp-y2,yp-y3,gamma)
     Az = A_array(n1,n2,zp-z1,zp-z2,zp-z3,gamma)
 
-    grad_Ax = grad_A_array(l1,l2,xp-x1,xp-x2,xp-x3,gamma)
-    grad_Ay = grad_A_array(m1,m2,yp-y1,yp-y2,yp-y3,gamma)
-    grad_Az = grad_A_array(n1,n2,zp-z1,zp-z2,zp-z3,gamma)
+    grad_Ax = grad_A_array(ia,ib,ic,alpha1,alpha2,l1,l2,xp-x1,xp-x2,xp-x3,gamma)
+    grad_Ay = grad_A_array(ia,ib,ic,alpha1,alpha2,m1,m2,yp-y1,yp-y2,yp-y3,gamma)
+    grad_Az = grad_A_array(ia,ib,ic,alpha1,alpha2,n1,n2,zp-z1,zp-z2,zp-z3,gamma)
     
     sum_x = 0.
     sum_y = 0.
     sum_z = 0.
-    for I in xrange(l1+l2+1):
-        for J in xrange(m1+m2+1):
-            for K in xrange(n1+n2+1):
-                sum_x += grad_Ax[I]*Ay[J]*Az[K]*Fgamma(I+J+K+1,rcp2*gamma)
-                sum_y += Ax[I]*grad_Ay[J]*Az[K]*Fgamma(I+J+K+1,rcp2*gamma)
-                sum_z += Ax[I]*Ay[J]*grad_Az[K]*Fgamma(I+J+K+1,rcp2*gamma)
+    for I in range(l1+l2+1):
+        for J in range(m1+m2+1):
+            for K in range(n1+n2+1):
+                sum_x += grad_Ax[I]*Ay[J]*Az[K]*Fgamma(I+J+K,rcp2*gamma)
+                sum_y += Ax[I]*grad_Ay[J]*Az[K]*Fgamma(I+J+K,rcp2*gamma)
+                sum_z += Ax[I]*Ay[J]*grad_Az[K]*Fgamma(I+J+K,rcp2*gamma)
 
-    gradV_x = -4*pi*exp(-alpha1*alpha2*rab2/gamma)*sum_x
-    gradV_y = -4*pi*exp(-alpha1*alpha2*rab2/gamma)*sum_y
-    gradV_z = -4*pi*exp(-alpha1*alpha2*rab2/gamma)*sum_z
-        
+    dPdC = get_dPdC(ia,ib,ic,alpha1,alpha2)
+
+    for I in range(l1+l2+1):
+        for J in range(m1+m2+1):
+            for K in range(n1+n2+1):
+                sum_x += Ax[I]*Ay[J]*Az[K]*DerFgamma(I+J+K,rcp2*gamma) * (2.*gamma*(x3-xp)) * (1.-dPdC)
+                sum_y += Ax[I]*Ay[J]*Az[K]*DerFgamma(I+J+K,rcp2*gamma) * (2.*gamma*(y3-yp)) * (1.-dPdC)
+                sum_z += Ax[I]*Ay[J]*Az[K]*DerFgamma(I+J+K,rcp2*gamma) * (2.*gamma*(z3-zp)) * (1.-dPdC)
+
+
+    gradV_x = -2*pi/gamma*exp(-alpha1*alpha2*rab2/gamma)*sum_x
+    gradV_y = -2*pi/gamma*exp(-alpha1*alpha2*rab2/gamma)*sum_y
+    gradV_z = -2*pi/gamma*exp(-alpha1*alpha2*rab2/gamma)*sum_z
+    
+    # derivative on gaussian contraction prefactor 
+    sum_x = 0.
+    sum_y = 0.
+    sum_z = 0.
+    for I in range(l1+l2+1):
+        for J in range(m1+m2+1):
+            for K in range(n1+n2+1):
+                sum_x += Ax[I]*Ay[J]*Az[K]*Fgamma(I+J+K,rcp2*gamma)
+                sum_y += Ax[I]*Ay[J]*Az[K]*Fgamma(I+J+K,rcp2*gamma)
+                sum_z += Ax[I]*Ay[J]*Az[K]*Fgamma(I+J+K,rcp2*gamma)
+
+    dABdC = get_dABdC(ia,ib,ic)
+    sum_x = dABdC * (-2*alpha1*alpha2/gamma*(x1-x2))*sum_x
+    sum_y = dABdC * (-2*alpha1*alpha2/gamma*(y1-y2))*sum_y
+    sum_z = dABdC * (-2*alpha1*alpha2/gamma*(z1-z2))*sum_z
+ 
+    gradV_x -= 2*pi/gamma*exp(-alpha1*alpha2*rab2/gamma)*sum_x
+    gradV_y -= 2*pi/gamma*exp(-alpha1*alpha2*rab2/gamma)*sum_y
+    gradV_z -= 2*pi/gamma*exp(-alpha1*alpha2*rab2/gamma)*sum_z
+
     return gradV_x,gradV_y,gradV_z
-    
-    
+   
+def DerFgamma(m,x):
+    "Derivative of incomplete gamma function"
+    SMALL=0.00000001
+    x = max(abs(x),SMALL)
+    val = gamm_inc(m+0.5,x)
+    return -((m+0.5)*x**(-m-1.5)*val)/2+exp(-x)/(2*x); 
+
+def get_dABdC(ia,ib,ic):
+    if ia==ic and ib==ic:
+        dABdC =  0.0
+    elif ia==ic and ib!=ic:
+        dABdC =  1.0 
+    elif ia!=ic and ib==ic:
+        dABdC = -1.0 
+    elif ia!=ic and ib!=ic:
+        dABdC =  0.
+    return dABdC
+
+
+def get_dPdC(ia,ib,ic,alpha1,alpha2):
+    if ia==ic and ib==ic:
+        dPdC = 1.
+    elif ia==ic and ib!=ic:
+        dPdC = alpha1 / (alpha1+alpha2)
+    elif ia!=ic and ib==ic:
+        dPdC = alpha2 / (alpha1+alpha2)
+    elif ia!=ic and ib!=ic:
+        dPdC = 0.
+    return dPdC
+
 def contr_coulomb(aexps,acoefs,anorms,xyza,powa,
                   bexps,bcoefs,bnorms,xyzb,powb,
                   cexps,ccoefs,cnorms,xyzc,powc,
                   dexps,dcoefs,dnorms,xyzd,powd):
 
     Jij = 0.
-    for i in xrange(len(aexps)):
-        for j in xrange(len(bexps)):
-            for k in xrange(len(cexps)):
-                for l in xrange(len(dexps)):
+    for i in range(len(aexps)):
+        for j in range(len(bexps)):
+            for k in range(len(cexps)):
+                for l in range(len(dexps)):
                     incr = coulomb_repulsion(xyza,anorms[i],powa,aexps[i],
                                              xyzb,bnorms[j],powb,bexps[j],
                                              xyzc,cnorms[k],powc,cexps[k],
@@ -344,9 +460,9 @@ def coulomb_repulsion((xa,ya,za),norma,(la,ma,na),alphaa,
     Bz = B_array(na,nb,nc,nd,zp,za,zb,zq,zc,zd,gamma1,gamma2,delta)
 
     sum = 0.
-    for I in xrange(la+lb+lc+ld+1):
-        for J in xrange(ma+mb+mc+md+1):
-            for K in xrange(na+nb+nc+nd+1):
+    for I in range(la+lb+lc+ld+1):
+        for J in range(ma+mb+mc+md+1):
+            for K in range(na+nb+nc+nd+1):
                 sum = sum + Bx[I]*By[J]*Bz[K]*Fgamma(I+J+K,0.25*rpq2/delta)
 
     return 2*pow(pi,2.5)/(gamma1*gamma2*sqrt(gamma1+gamma2)) \
@@ -355,10 +471,6 @@ def coulomb_repulsion((xa,ya,za),norma,(la,ma,na),alphaa,
 
 def B_term(i1,i2,r1,r2,u,l1,l2,l3,l4,Px,Ax,Bx,Qx,Cx,Dx,gamma1,gamma2,delta):
     "THO eq. 2.22"
-    # Jussi pointed out that in the paper, the exponents of delta are
-    #  i1+i2-r1-r2-u, rather than what I have, i1+i2-2(r1+r2)-u.
-    #  However, when I changed this term, the integrals no longer give the
-    #  correct values. Something to think about at some point, or maybe not.
     return fB(i1,l1,l2,Px,Ax,Bx,r1,gamma1) \
            *pow(-1,i2)*fB(i2,l3,l4,Qx,Cx,Dx,r2,gamma2) \
            *pow(-1,u)*fact_ratio2(i1+i2-2*(r1+r2),u) \
@@ -368,11 +480,11 @@ def B_term(i1,i2,r1,r2,u,l1,l2,l3,l4,Px,Ax,Bx,Qx,Cx,Dx,gamma1,gamma2,delta):
 def B_array(l1,l2,l3,l4,p,a,b,q,c,d,g1,g2,delta):
     Imax = l1+l2+l3+l4+1
     B = [0]*Imax
-    for i1 in xrange(l1+l2+1):
-        for i2 in xrange(l3+l4+1):
-            for r1 in xrange(i1/2+1):
-                for r2 in xrange(i2/2+1):
-                    for u in xrange((i1+i2)/2-r1-r2+1):
+    for i1 in range(l1+l2+1):
+        for i2 in range(l3+l4+1):
+            for r1 in range(i1/2+1):
+                for r2 in range(i2/2+1):
+                    for u in range((i1+i2)/2-r1-r2+1):
                         I = i1+i2-2*(r1+r2)-u
                         B[I] = B[I] + B_term(i1,i2,r1,r2,u,l1,l2,l3,l4,
                                              p,a,b,q,c,d,g1,g2,delta)
@@ -390,9 +502,9 @@ def three_center_1D(xi,ai,alphai,xj,aj,alphaj,xk,ak,alphak):
     xpj = px-xj
     xpk = px-xk
     int = 0
-    for q in xrange(ai+1):
-        for r in xrange(aj+1):
-            for s in xrange(ak+1):
+    for q in range(ai+1):
+        for r in range(aj+1):
+            for s in range(ak+1):
                 n,rem = divmod(q+r+s,2)
                 if (q+r+s) %2 == 0:
                     i_qrs = binomial(ai,q)*binomial(aj,r)*binomial(ak,s)*\
